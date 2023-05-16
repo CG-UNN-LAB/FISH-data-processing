@@ -17,11 +17,11 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>FISH data processing</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images/images.qrc">
-    <normaloff>:/images/icon.ico</normaloff>:/images/icon.ico</iconset>
+   <iconset resource="resources/resources.qrc">
+    <normaloff>:/resources/icon.ico</normaloff>:/resources/icon.ico</iconset>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -29,7 +29,7 @@
   <property name="styleSheet">
    <string notr="true">#MainWindow
 {
-border-image: url(:/images/Background4.jpg);
+border-image: url(:/resources/Background4.jpg);
 background-position: center center no-repeat  fixed;
 background-size: 100% 100%;
 
@@ -320,7 +320,7 @@ outline: none;
   </widget>
  </widget>
  <resources>
-  <include location="images/images.qrc"/>
+  <include location="resources/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

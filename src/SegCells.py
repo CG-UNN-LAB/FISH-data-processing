@@ -21,9 +21,10 @@ from PyQt6.QtCore import Qt
 import cv2
 import shutil
 
+
 rf = Roboflow(api_key="tpYoi687CTq5QvK495ax")
 project = rf.workspace("projectcell0s").project("project_cell1s")
-dataset = project.version(1).download("yolov8")
+#dataset = project.version(1).download("yolov8")
 
 class Ui_MainWindow(object):
     FILEPATH = '-1'
@@ -33,12 +34,12 @@ class Ui_MainWindow(object):
         MainWindow.resize(918, 684)
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("resources/icon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("#MainWindow\n"
 "{\n"
-"border-image: url(images/Background4.jpg);\n"
+"border-image: url(resources/Background4.jpg);\n"
 "background-position: center center no-repeat  fixed;\n"
 "background-size: 100% 100%;\n"
 "\n"
@@ -278,6 +279,8 @@ class Ui_MainWindow(object):
                  self.process_image(filename)
 
   
+
+
 
 if __name__ == "__main__":
     import sys
