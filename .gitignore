@@ -1,3 +1,10 @@
+#### Custom ignore rules
+
+# Roboflow train dataset
+Project_*
+
+#### -------------------
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
