@@ -3,6 +3,9 @@
 # Roboflow train dataset
 Project_*
 
+# matches any files and directories with the name test
+src/YourPhoto/
+
 #### -------------------
 
 # Byte-compiled / optimized / DLL files
