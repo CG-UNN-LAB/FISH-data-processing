@@ -17,9 +17,6 @@ import matplotlib.pyplot as plt
 import shutil
 
 from ultralytics import YOLO
-#from IPython.display import display, Image
-from roboflow import Roboflow
-
 
 HOME = os.getcwd()
 print(HOME)

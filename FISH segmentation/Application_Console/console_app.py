@@ -29,7 +29,7 @@ if __name__ == '__main__':
     args = cli_argument_parser()
 
     log.info(f'Load Segmentation model')
-    FileModelPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "WorkFile\\best.pt")
+    FileModelPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..\\Model\\my_yolov8_model_core_segmentation.pt")
     model = YOLO(FileModelPath)
 
     log.info(f'Read input image {args.input}')
@@ -41,11 +41,11 @@ if __name__ == '__main__':
         show = False, 
         classes=[0,1], 
         save = True,
-        project='output',
+        project='..\\Photo_Console',
         name=f'{os.path.basename(args.input)}',
         show_labels = False,
         show_conf = False,
         save_txt = True,
         stream=False,
         conf=args.threshold,
-        line_width=1)
+        line_thickness=1)
