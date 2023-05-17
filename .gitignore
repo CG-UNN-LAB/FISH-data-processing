@@ -4,7 +4,7 @@
 Project_*
 
 # matches any files and directories with the name test
-src/YourPhoto/
+YourPhoto/
 
 #### -------------------
 
