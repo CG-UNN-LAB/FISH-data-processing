@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import *
 from PIL import Image,ImageTk
 from tkinter import filedialog
+from tkinter import *
+from tkinter import ttk
+from tkinter.messagebox import OK, INFO, showinfo 
 from PIL import Image
 import os
 import czifile
@@ -11,6 +14,7 @@ import cv2
 import requests
 from io import BytesIO
 import matplotlib.pyplot as plt
+import shutil
 
 from ultralytics import YOLO
 #from IPython.display import display, Image
@@ -56,6 +60,9 @@ photo2 = ImageTk.PhotoImage(image2)
 IMAGE_PREDICT = "//"
 FILE = "//"
 IMAGE = Image
+WHOLE = 0
+EXPLODE = 0
+
 
 def process_image(filename):
     if filename.endswith('.czi'):
@@ -117,8 +124,26 @@ def save_image():
 
 def predict_image(filename,s):
     model = YOLO('..\\Model\\my_yolov8_model_core_segmentation.pt')
+    path3=os.path.splitext(os.path.basename(filename))[0]
 
-    results = model.predict(source=filename, show = True, classes=[0,1],project='..\\Photo_Tkinter', save = True, hide_labels = False,hide_conf = False,conf=float(s),save_txt = True,line_thickness=1)
+   
+    
+    img = Image.open(filename)
+    
+    if os.path.exists('..\\Photo_Tkinter\\'+ path3):     # Фун-я model.predict не может сама перезаписать папку с полученным изображением;
+                shutil.rmtree('..\\Photo_Tkinter\\'+ path3)
+    
+   
+    results = model.predict(img, 
+                            show = False, classes=[0,1],
+                            project='..\\Photo_Tkinter',
+                            name=path3,
+                            save = True,
+                            hide_labels = False,
+                            hide_conf = False,
+                            conf=float(s),
+                            save_txt = True,
+                            line_thickness=1)
     names = model.names
     number_whole = 0
     number_explode = 0
@@ -126,10 +151,20 @@ def predict_image(filename,s):
         for c in r.boxes.cls:
             if (names[int(c)]=="Whole cell"):  number_whole+=1
             if (names[int(c)]=="Explode cell"): number_explode+=1
-    print("Explode:")
-    print(number_explode)
-    print("Whole:")
-    print(number_whole)
+    global EXPLODE 
+    EXPLODE = number_explode
+    global WHOLE
+    WHOLE = number_whole
+    Path = '..\\Photo_Tkinter\\' + path3 + '\\' + path3 + '.jpg' # Берем путь, чтобы вывести на экран;
+    img = Image.open(Path)
+    img = img.resize((label_width, label_height))
+    photo = ImageTk.PhotoImage(img)
+    #Add image to the Canvas Items
+    label2.configure(image=photo)
+    label2.image = photo
+    label2.pack()
+    show_message()
+    #Path2 = '..\\Photo_Tkinter\\'
     #print(results)
 
 def select_image2():
@@ -141,6 +176,11 @@ def select_image2():
     #label['text'] = s
     predict_image(filename,s)
 
+def show_message():
+    global EXPLODE
+    global WHOLE
+    showinfo(title="RESULT_PREDICT", message="Было найдено целых клеток:"+str(WHOLE)+"\nБыло найдено лопнувших клеток:"+str(EXPLODE), 
+        detail="Потрачено времени:", icon=INFO, default=OK)
 
 f_left = Frame(root)
 f_right = Frame(root)
@@ -157,9 +197,9 @@ label.image = photo
 label.pack(side=tk.TOP)
 
 global label2
-#label2 = tk.Label(f_right, image=photo2, width=label_width, height=label_height)
-#label2.image = photo2
-#label2.pack(side=tk.TOP)
+label2 = tk.Label(f_right, image=photo2, width=label_width, height=label_height)
+label2.image = photo2
+label2.pack(side=tk.TOP)
 
 label3 = tk.Label(f_right,text="ПОРОГ ТОЧНОСТИ:")
 label3.pack(side=tk.LEFT)
@@ -168,19 +208,19 @@ text = Text(f_right,width=30, height=1)
 text.pack(side=tk.LEFT)
 
 button2 = tk.Button(f_left, text="Save your convert image", command=save_image)
-#button2.pack(side="right", anchor="nw")  # Place the button on the left border of the window
+button2.pack(side="right", anchor="nw")  # Place the button on the left border of the window
 button2.pack(side=tk.BOTTOM)
 
 button = tk.Button(f_left, text="Select Image for image translation", command=select_image)
-#button.pack(side="right", anchor="nw")  # Place the button on the left border of the window
+button.pack(side="right", anchor="nw")  # Place the button on the left border of the window
 button.pack(side=tk.BOTTOM)
 
-#button4 = tk.Button(f_right, text="Save your predict with mask image", command=predict_image)
-#button4.pack(side="right", anchor="nw")  # Place the button on the left border of the window
-#button4.pack(side=tk.BOTTOM)
+button4 = tk.Button(f_right, text="Show help on prediction result", command=show_message)
+button4.pack(side="right", anchor="nw")  # Place the button on the left border of the window
+button4.pack(side=tk.BOTTOM)
 
 button3 = tk.Button(f_right, text="Predict your convert image", command=select_image2)
-#button3.pack(side="right", anchor="nw")  # Place the button on the left border of the window
+button3.pack(side="right", anchor="nw")  # Place the button on the left border of the window
 button3.pack(side=tk.BOTTOM)
 
 root.mainloop()
