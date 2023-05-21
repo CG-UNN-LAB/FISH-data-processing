@@ -4,7 +4,9 @@
 Project_*
 
 # matches any files and directories with the name test
-YourPhoto/
+Photo_Qt
+Photo_Tkinter
+Photo_Console
 
 #### -------------------
 
