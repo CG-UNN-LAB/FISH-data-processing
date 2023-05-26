@@ -214,7 +214,7 @@ def show_message():
 f_left = Frame(root)
 f_right = Frame(root)
 
-f_left = LabelFrame(text="CZI_TO_JPEG")
+f_left = LabelFrame(text="CZI_TO_JPG")
 f_right = LabelFrame(text="PREDICT_YOUR_IMAGE")
 
 f_left.pack(side=tk.LEFT)
