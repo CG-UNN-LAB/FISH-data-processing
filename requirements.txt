@@ -1,4 +1,7 @@
 czifile==2019.7.2
+ipython==8.13.2
+Pillow==9.5.0
+PyQt6==6.5.0
 matplotlib==3.7.1
 numpy==1.24.3
 ultralytics==8.0.107
