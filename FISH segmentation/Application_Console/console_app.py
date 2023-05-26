@@ -19,8 +19,8 @@ def cli_argument_parser():
         required=True
     )
     parser.add_argument(
-        '-t', '--threshold',
-        dest='threshold',
+        '-c', '--confidence',
+        dest='confidence',
         type=float,
         help='Threshold for object prediction',
         default=0.5
@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     detector = ChromosomeCellDetector(image)
     log.info(f'Perform segmentation')
-    detector.find_cells(confidence=0.5)
+    detector.find_cells(confidence=args.confidence)
     log.info(f'Perform chromosomes detection')
     detector.detect_chromosomes()
 
