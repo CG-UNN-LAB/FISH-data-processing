@@ -2,29 +2,28 @@ import argparse
 import logging as log
 import os
 
-from ultralytics import YOLO
+from matplotlib import pyplot as plt
 
-from io_utils import read_czi_file_as_pil_image
+from chromosome_detection import ChromosomeCellDetector
+from io_utils import read_czi_image
 
 
 def cli_argument_parser():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-i",
-        "--input",
+        '-i', '--input',
         type=str,
-        dest="input",
-        help="Path to input image (.czi .png .jpg)",
-        required=True,
+        dest='input',
+        help='Path to input image (.czi .png .jpg)',
+        required=True
     )
     parser.add_argument(
-        "-t",
-        "--threshold",
-        dest="threshold",
+        '-c', '--confidence',
+        dest='confidence',
         type=float,
-        help="Threshold for object prediction",
-        default=0.5,
+        help='Threshold for object prediction',
+        default=0.5
     )
 
     args = parser.parse_args()
@@ -32,32 +31,21 @@ def cli_argument_parser():
     return args
 
 
-if __name__ == "__main__":
-    log.basicConfig(format="[%(levelname)s]:%(message)s", level=log.INFO)
+if __name__ == '__main__':
+    log.basicConfig(format='[%(levelname)s]:%(message)s', level=log.INFO)
     args = cli_argument_parser()
 
-    log.info(f"Load Segmentation model")
-    FileModelPath = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "..\\Model\\my_yolov8_model_core_segmentation.pt",
-    )
-    model = YOLO(FileModelPath)
+    log.info(f'Read input image {args.input}')
+    image, _ = read_czi_image(args.input)
 
-    log.info(f"Read input image {args.input}")
-    image = read_czi_file_as_pil_image(args.input)
+    detector = ChromosomeCellDetector(image)
+    log.info(f'Perform segmentation')
+    detector.find_cells(confidence=args.confidence)
+    log.info(f'Perform chromosomes detection')
+    detector.detect_chromosomes()
 
-    log.info(f"Perform segmentation")
-    predictions = model.predict(
-        image,
-        show=False,
-        classes=[0, 1],
-        save=True,
-        project="..\\Photo_Console",
-        name=f"{os.path.basename(args.input)}",
-        show_labels=False,
-        show_conf=False,
-        save_txt=True,
-        stream=False,
-        conf=args.threshold,
-        line_thickness=1,
-    )
+    fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)
+    ax = detector.plot(ax)
+
+    fname = f'..\\Photo_Console\\{os.path.basename(args.input).split(".")[0]}.png'
+    fig.savefig(fname, dpi='figure', format='png')
