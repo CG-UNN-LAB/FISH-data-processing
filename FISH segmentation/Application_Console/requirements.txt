@@ -1,0 +1,4 @@
+czifile==2019.7.2
+numpy==1.23.4
+Pillow==9.5.0
+ultralytics==8.0.91

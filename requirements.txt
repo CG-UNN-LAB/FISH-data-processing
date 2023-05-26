@@ -1,5 +1,0 @@
-PyQt6
-matplotlib
-roboflow
-ultralytics == 8.0.91
-czifile

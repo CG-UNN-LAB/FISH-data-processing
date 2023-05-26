@@ -1,7 +1,9 @@
-from PIL import Image
-import numpy as np
-import czifile
 import os
+
+import czifile
+import numpy as np
+from PIL import Image
+
 
 def read_czi_file_as_pil_image(filename):
     with czifile.CziFile(os.path.join(filename)) as czi:
