@@ -1,5 +1,5 @@
 czifile==2019.7.2
-ipython==8.13
+ipython==8.13.2
 Pillow==9.5.0
 PyQt6==6.5.0
 matplotlib==3.7.1
