@@ -23,4 +23,4 @@ jobs:
           python -m pip install -r requirements_ci.txt
 
       - name: Running flake8 checks
-        run: python3 -m flake8 ./src --config=flake8_setup.cfg --show-source --statistics
+        run: python3 -m flake8 ./ --config=flake8_setup.cfg --show-source --statistics
