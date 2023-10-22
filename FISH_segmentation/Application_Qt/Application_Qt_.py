@@ -126,6 +126,39 @@ class Func(Ui_MainWindow):
                 self.PhotoSave(pixmap,filename)
 
 
+                ################################################
+    def read_czi_image(self, filename, norm=True):
+        with czifile.CziFile(filename) as czi:
+            image = czi.asarray().squeeze()
+            # image = np.moveaxis(image, 0, -1)[..., ::-1]  # swap channels to order -> RGB
+            image = np.stack([image[1], image[2], image[0]], axis=-1)  # swap channels to order -> RGB
+
+            if norm:
+                info = np.iinfo(image.dtype)
+                image = image.astype(np.float64) / info.max  # normalize the data to 0-1
+                image = (255 * image).astype(np.uint8)  # normalize the data to 0-255
+
+
+                 # Предположим, что 'b' - это ваш массив-изображение
+                img = Image.fromarray(image)
+
+                # Преобразование PIL Image в QImage
+                qim = QImage(img.tobytes(), img.size[0], img.size[1], QImage.Format.Format_RGB888)
+
+                # Преобразование QImage в QPixmap
+                pix = QPixmap.fromImage(qim)
+                self.labelFoto.setPixmap(pix)
+                self.PhotoSave(pix,filename)
+            #image = np.ascontiguousarray(image)
+            metadata = czi.metadata(raw=True)
+
+
+
+            #return image, metadata
+
+                #####################################
+
+
 # Выбор изображения и добавление его в окно для исходного изображения:
     def add_image(self):
         filename, _ = QFileDialog.getOpenFileName(None, "Open Image", os.getcwd(), "Images (*.png *.jpg *.czi)")
@@ -144,7 +177,8 @@ class Func(Ui_MainWindow):
                  self.PhotoSave(pixmap,filename)
 
              if filename.endswith('.czi'):
-                 self.process_image(filename)
+                 self.read_czi_image(filename)
+                 #self.process_image(filename)
 
 
 if __name__ == "__main__":
