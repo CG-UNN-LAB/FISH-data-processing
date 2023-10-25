@@ -1,6 +1,6 @@
 import enum
 import os
-
+import csv
 import cv2
 import imutils
 import numpy as np
@@ -8,6 +8,7 @@ import scipy
 import skimage
 from matplotlib import pyplot as plt
 from ultralytics import YOLO
+from scipy import ndimage
 
 
 class Cell:
@@ -22,6 +23,10 @@ class Cell:
 
         self.red_chromosomes = []
         self.green_chromosomes = []
+        self.center_of_mass = []
+
+    def add_center_of_mass(self, center_of_mass):
+        self.center_of_mass.append(center_of_mass)
 
     def add_red_chromosome(self, red_chromosome):
         self.red_chromosomes.append(red_chromosome)
@@ -31,10 +36,10 @@ class Cell:
 
 
 class ChromosomeCellDetector:
+    RedChromosome = 0
+    GreenChromosome = 0
     MODEL_PATH = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "..\\Model\\my_yolov8_model_core_segmentation.pt"
-    )
+        os.path.dirname(os.path.abspath(__file__)), "..\\Model\\my_yolov8_model_core_segmentation_plus_plus.pt")
     CELLS_DETECTOR = YOLO(MODEL_PATH)
 
     def __init__(self, image: np.ndarray):
@@ -91,38 +96,68 @@ class ChromosomeCellDetector:
 
                 cell = Cell(masked_image, Cell.CellType(int(cls)))
                 self.cells.append(cell)
+                # Найдем координаты центра масс каждой клетки
+
+                if cell.cell_type == Cell.CellType.EXPLODED or cell.cell_type == Cell.CellType.WHOLE:
+                    labeled_mask, num_labels = ndimage.label(mask)
+                    for label in range(1, num_labels + 1):
+                        np.argwhere(labeled_mask == label)
+                        center_of_mass = ndimage.center_of_mass(mask, labeled_mask, label)
+                        cell.add_center_of_mass(center_of_mass)
+
+    def write_to_csv(self, output_file, folder_path, file_name):
+        with open(output_file, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';')  # Указываем точку с запятой как разделитель
+
+            # Write header
+            header = ["Folder Path", "File Name", "Cell Number", "Center X", "Center Y",
+                      "Green Chromosomes", "Red Chromosomes", "Cell Type"]
+            writer.writerow(header)
+
+            # Write data
+            for idx, cell in enumerate(self.cells):
+                for center_of_mass in cell.center_of_mass:
+                    row_data = [
+                        folder_path,
+                        file_name,
+                        idx + 1,
+                        center_of_mass[1],  # Координата X центра масс
+                        center_of_mass[0],  # Координата Y центра масс
+                        len(cell.green_chromosomes),
+                        len(cell.red_chromosomes),
+                        "Exploded" if cell.cell_type == Cell.CellType.EXPLODED else "Whole"
+                    ]
+                    writer.writerow(row_data)
 
     def detect_chromosomes(self):
-        unsharped_image = ChromosomeCellDetector.__unsharp_mask(
-            self.image,
-            kernel_size=(5, 5),
-            sigma=5.0,
-            amount=5.0,
-            threshold=100
-        )
+        unsharped_image = ChromosomeCellDetector.__unsharp_mask(self.image,
+                                                                kernel_size=(5, 5),
+                                                                sigma=5.0,
+                                                                amount=5.0,
+                                                                threshold=100)
         red_channel, green_channel = unsharped_image[..., 0], unsharped_image[..., 1]
 
         red_chromosome_candidates = ChromosomeCellDetector.__get_chromosome_candidates(red_channel)
         green_chromosome_candidates = ChromosomeCellDetector.__get_chromosome_candidates(green_channel)
 
+        ChromosomeCellDetector.RedChromosome = 0
+        ChromosomeCellDetector.GreenChromosome = 0
+
         closeness = 1.0
         self.__filter_chromosomes(
             red_chromosome_candidates,
             'red',
-            closeness=closeness,
-        )
+            closeness=closeness)
         self.__filter_chromosomes(
             green_chromosome_candidates,
             'green',
-            closeness=closeness,
-        )
+            closeness=closeness)
 
     def __filter_chromosomes(
             self,
             chromosome_candidates: np.ndarray,
             chromosome_type: str,
-            closeness: float = 1.0,
-    ):
+            closeness: float = 1.0):
         accepted = np.zeros(chromosome_candidates.shape[0], dtype=bool)
 
         for idx, candidate in enumerate(chromosome_candidates):
@@ -141,8 +176,10 @@ class ChromosomeCellDetector:
                     accepted[idx] = True
                     if chromosome_type == 'red':
                         cell.add_red_chromosome(candidate)
+                        ChromosomeCellDetector.RedChromosome += 1
                     elif chromosome_type == 'green':
                         cell.add_green_chromosome(candidate)
+                        ChromosomeCellDetector.GreenChromosome += 1
                     break
 
     @staticmethod
@@ -151,8 +188,7 @@ class ChromosomeCellDetector:
             kernel_size: tuple[int, int] = (5, 5),
             sigma: float = 0.0,
             amount: float = 1.0,
-            threshold: int = 0
-    ):
+            threshold: int = 0):
         blurred = cv2.GaussianBlur(image, kernel_size, sigma)
         sharpened = float(amount + 1) * image - float(amount) * blurred
         sharpened = np.maximum(sharpened, np.zeros(sharpened.shape))
