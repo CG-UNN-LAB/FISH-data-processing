@@ -121,9 +121,7 @@ def predict_image(filename, s):
     img = Image.open(filename)
     file_extension = os.path.splitext(os.path.basename(filename))[1]
 
-    if os.path.exists(
-        "..\\Photo_Tkinter\\" + path3
-    ):  # Фун-я model.predict не может сама перезаписать папку с полученным изображением;
+    if os.path.exists("..\\Photo_Tkinter\\" + path3):
         shutil.rmtree("..\\Photo_Tkinter\\" + path3)
 
     results = model.predict(
@@ -137,8 +135,7 @@ def predict_image(filename, s):
         hide_conf=False,
         conf=float(s),
         save_txt=True,
-        line_thickness=1,
-    )
+        line_thickness=1)
     names = model.names
     number_whole = 0
     number_explode = 0
@@ -159,9 +156,7 @@ def predict_image(filename, s):
     global INFERENCE
     INFERENCE = results[0].speed["inference"]
 
-    Path = (
-        "..\\Photo_Tkinter\\" + path3 + "\\" + path3 + file_extension
-    )  # Берем путь, чтобы вывести на экран;
+    Path = ("..\\Photo_Tkinter\\" + path3 + "\\" + path3 + file_extension)  # Берем путь, чтобы вывести на экран;
     img = Image.open(Path)
     img = img.resize((label_width, label_height))
     photo = ImageTk.PhotoImage(img)
@@ -207,8 +202,7 @@ def show_message():
         + str(POSTPROCESS)
         + "ms",
         icon=INFO,
-        default=OK,
-    )
+        default=OK)
 
 
 f_left = Frame(root)
@@ -238,30 +232,24 @@ text.pack(side=tk.LEFT)
 
 button2 = tk.Button(f_left, text="Save your convert image", command=save_image)
 button2.pack(
-    side="right", anchor="nw"
-)  # Place the button on the left border of the window
+    side="right", anchor="nw")  # Place the button on the left border of the window
 button2.pack(side=tk.BOTTOM)
 
 button = tk.Button(
-    f_left, text="Select Image for image translation", command=select_image
-)
+    f_left, text="Select Image for image translation", command=select_image)
 button.pack(
-    side="right", anchor="nw"
-)  # Place the button on the left border of the window
+    side="right", anchor="nw")  # Place the button on the left border of the window
 button.pack(side=tk.BOTTOM)
 
 button4 = tk.Button(
-    f_right, text="Show help on prediction result", command=show_message
-)
+    f_right, text="Show help on prediction result", command=show_message)
 button4.pack(
-    side="right", anchor="nw"
-)  # Place the button on the left border of the window
+    side="right", anchor="nw")  # Place the button on the left border of the window
 button4.pack(side=tk.BOTTOM)
 
 button3 = tk.Button(f_right, text="Predict your convert image", command=select_image2)
 button3.pack(
-    side="right", anchor="nw"
-)  # Place the button on the left border of the window
+    side="right", anchor="nw")  # Place the button on the left border of the window
 button3.pack(side=tk.BOTTOM)
 
 root.mainloop()
