@@ -16,15 +16,13 @@ def cli_argument_parser():
         type=str,
         dest='input',
         help='Path to input image (.czi .png .jpg)',
-        required=True
-    )
+        required=True)
     parser.add_argument(
         '-c', '--confidence',
         dest='confidence',
         type=float,
         help='Threshold for object prediction',
-        default=0.5
-    )
+        default=0.5)
 
     args = parser.parse_args()
 
@@ -39,9 +37,9 @@ if __name__ == '__main__':
     image, _ = read_czi_image(args.input)
 
     detector = ChromosomeCellDetector(image)
-    log.info(f'Perform segmentation')
+    log.info(f'{"Perform segmentation"}')
     detector.find_cells(confidence=args.confidence)
-    log.info(f'Perform chromosomes detection')
+    log.info(f'{"Perform chromosomes detection"}')
     detector.detect_chromosomes()
 
     fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)

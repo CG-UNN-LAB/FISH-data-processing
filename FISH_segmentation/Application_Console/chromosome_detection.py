@@ -32,9 +32,7 @@ class Cell:
 
 class ChromosomeCellDetector:
     MODEL_PATH = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "..\\Model\\my_yolov8_model_core_segmentation.pt"
-    )
+        os.path.dirname(os.path.abspath(__file__)), "..\\Model\\my_yolov8_model_core_segmentation.pt")
     CELLS_DETECTOR = YOLO(MODEL_PATH)
 
     def __init__(self, image: np.ndarray):
@@ -93,13 +91,11 @@ class ChromosomeCellDetector:
                 self.cells.append(cell)
 
     def detect_chromosomes(self):
-        unsharped_image = ChromosomeCellDetector.__unsharp_mask(
-            self.image,
-            kernel_size=(5, 5),
-            sigma=5.0,
-            amount=5.0,
-            threshold=100
-        )
+        unsharped_image = ChromosomeCellDetector.__unsharp_mask(self.image,
+                                                                kernel_size=(5, 5),
+                                                                sigma=5.0,
+                                                                amount=5.0,
+                                                                threshold=100)
         red_channel, green_channel = unsharped_image[..., 0], unsharped_image[..., 1]
 
         red_chromosome_candidates = ChromosomeCellDetector.__get_chromosome_candidates(red_channel)
@@ -109,20 +105,17 @@ class ChromosomeCellDetector:
         self.__filter_chromosomes(
             red_chromosome_candidates,
             'red',
-            closeness=closeness,
-        )
+            closeness=closeness)
         self.__filter_chromosomes(
             green_chromosome_candidates,
             'green',
-            closeness=closeness,
-        )
+            closeness=closeness)
 
     def __filter_chromosomes(
             self,
             chromosome_candidates: np.ndarray,
             chromosome_type: str,
-            closeness: float = 1.0,
-    ):
+            closeness: float = 1.0):
         accepted = np.zeros(chromosome_candidates.shape[0], dtype=bool)
 
         for idx, candidate in enumerate(chromosome_candidates):
@@ -151,8 +144,7 @@ class ChromosomeCellDetector:
             kernel_size: tuple[int, int] = (5, 5),
             sigma: float = 0.0,
             amount: float = 1.0,
-            threshold: int = 0
-    ):
+            threshold: int = 0):
         blurred = cv2.GaussianBlur(image, kernel_size, sigma)
         sharpened = float(amount + 1) * image - float(amount) * blurred
         sharpened = np.maximum(sharpened, np.zeros(sharpened.shape))

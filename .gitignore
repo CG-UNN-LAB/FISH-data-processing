@@ -7,7 +7,9 @@ Project_*
 Photo_Qt
 Photo_Tkinter
 Photo_Console
-
+.idea
+.vscode
+pyptoject.toml
 #### -------------------
 
 # Byte-compiled / optimized / DLL files
