@@ -93,7 +93,7 @@ class Func(Ui_MainWindow):
 
         Image_name = os.path.splitext(os.path.basename(filename))[0]  # Для получения имени файла
         dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..\\Photo_Qt")
-        jpg = ".jpg"
+        jpg = ".png"
         filepath = os.path.join(dir_path, Image_name)  # Объединяет путь к директории (dir_path)
         filepath = filepath + jpg
         Func.FILEPATH = filepath
