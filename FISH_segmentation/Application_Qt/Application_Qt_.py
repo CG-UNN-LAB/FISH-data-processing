@@ -1,14 +1,16 @@
-import io
 import os
 import czifile
 import numpy as np
+import matplotlib.image as mpimg
 from PIL import Image
+from matplotlib import pyplot as plt
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import QFileDialog
 from ultralytics import YOLO
 from Application_Qt_module_ui import Ui_MainWindow
+from ChromosomePatch import ChromosomeCellDetector
 
 
 class Func(Ui_MainWindow):
@@ -27,7 +29,8 @@ class Func(Ui_MainWindow):
     # Клик по кнопке -> (вызов функции):
     def add_functions(self):
         self.pushButtonStart.clicked.connect(self.add_image)
-        self.pushButtonSeg.clicked.connect(self.predict_image)
+        # self.pushButtonSeg.clicked.connect(self.predict_image)
+        self.pushButtonSeg.clicked.connect(self.predict_image_ChromosomePatch)
 
     # Основная фун-я по сегментации:
     def predict_image(self):  # ИСПРАВИТЬ: не допускать точности, ниже 0.2;
@@ -47,8 +50,7 @@ class Func(Ui_MainWindow):
                 save_txt=False,
                 # Сохранит рядом с обработанным изображением в папку Ui_MainWindow.FILENAME;
                 conf=float(Accuracy),  # Точность;
-                line_thickness=1,
-            )  # Толщина границ выделения;
+            )
 
             if not os.path.exists("..\\Photo_Qt\\photos"):  # Создать папку, если ее нет;
                 os.makedirs("..\\Photo_Qt\\photos")
@@ -56,9 +58,9 @@ class Func(Ui_MainWindow):
             for r in predictions:
                 im_array = r.plot(labels=False, line_width=1)  # plot a BGR numpy array of predictions
                 im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
-                im.save("..\\Photo_Qt\\photos\\" + Func.FILENAME + ".jpg")
+                im.save("..\\Photo_Qt\\photos\\" + Func.FILENAME + ".png")
 
-            Path = ("..\\Photo_Qt\\" + "photos" + "\\" + Func.FILENAME + ".jpg")  # Берем путь, чтобы вывести на экран;
+            Path = ("..\\Photo_Qt\\" + "photos" + "\\" + Func.FILENAME + ".png")  # Берем путь, чтобы вывести на экран;
             pixmap = QPixmap(Path)
             self.label_2.setPixmap(pixmap)
 
@@ -84,47 +86,60 @@ class Func(Ui_MainWindow):
             )
             self.Reference.setText(ref)
 
+    def predict_image_ChromosomePatch(self):
+        if Func.FILEPATH != "-1":  # Значит, что картинка была сохранена, путь есть;
+            print(Func.FILEPATH)
+            Accuracy = float(self.labelAccuracy.text())  # Берем точность с поля;
+            img = mpimg.imread(Func.FILEPATH)
+            img = (255 * img).astype(np.uint8)  # normalize the data to 0-255
+            img = np.ascontiguousarray(img)
+
+            detectorTest = ChromosomeCellDetector(img)
+            img = detectorTest.rgba2rgb(img)
+            detector = ChromosomeCellDetector(img)
+            detector.find_cells(Accuracy)
+            detector.detect_chromosomes()
+
+            fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)
+            ax = detector.plot(ax)
+            fig.patch.set_visible(False)
+            ax.axis('off')
+
+            if not os.path.exists("..\\Photo_Qt\\photos"):  # Создать папку, если ее нет;
+                os.makedirs("..\\Photo_Qt\\photos")
+            fname = "..\\Photo_Qt\\photos\\" + Func.FILENAME + ".png"
+            fig.savefig(fname, dpi='figure', bbox_inches='tight', format='png')
+
+            Path = ("..\\Photo_Qt\\" + "photos" + "\\" + Func.FILENAME + ".png")  # Берем путь, чтобы вывести на экран;
+
+            pixmap = QPixmap(Path).scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio)
+            self.label_2.setPixmap(pixmap)
+
     # фун-я, сохраняющая картинку:
-    def PhotoSave(self, pixmap, filename):
+    def PhotoSave(self, image, filename):
         folder_name = "..\\Photo_Qt"  # Имя папки;
 
         if not os.path.exists(folder_name):  # Создать папку, если ее нет;
             os.makedirs(folder_name)
 
         Image_name = os.path.splitext(os.path.basename(filename))[0]  # Для получения имени файла
-        dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..\\Photo_Qt")
-        jpg = ".jpg"
+        dir_path = "..\\Photo_Qt"
+        print(dir_path)
+        jpg = ".png"
         filepath = os.path.join(dir_path, Image_name)  # Объединяет путь к директории (dir_path)
         filepath = filepath + jpg
         Func.FILEPATH = filepath
         Func.FILENAME = Image_name
-        pixmap.save(filepath)
+        detectorTest = ChromosomeCellDetector(image)
+        image = detectorTest.rgba2rgb(image)
+        plt.imsave(filepath, image)
 
-    # Обработка изображения, если оно передано в формате .czi:
-    def process_image(self, filename):
-        if filename.endswith(".czi"):
-            # Откроем ZIP-файл с помощью czifile:
-            with czifile.CziFile(os.path.join(filename)) as czi:
-                # Получить все каналы в файле:
-                channels = czi.asarray()[0, 0, :, :, :]
-                # Объедините все каналы в единое RGB-изображение:
-                image_array = np.stack([channels[1], channels[2], channels[0]], axis=-1)
-                # Преобразуем изображение в Pillow:
-                image_array = np.squeeze(image_array)
-                image = np.uint8(image_array)
-                img = Image.fromarray(image)
-                img = img.resize((450, 450))
-                # Преобразуем из Pillow в qimage через BytesIO:
-                byte_array = io.BytesIO()
-                img.save(byte_array, format="PNG")
-                byte_array = byte_array.getvalue()
-                qimage = QImage.fromData(byte_array)
-                pixmap = QPixmap.fromImage(qimage)
-                self.labelFoto.setPixmap(pixmap)
-                # Создадим папку и положим туда выбранное изображение:
-                self.PhotoSave(pixmap, filename)
-
-                ################################################
+        img = Image.fromarray(image)
+        # Преобразование PIL Image в QImage
+        qim = QImage(img.tobytes(), img.size[0], img.size[1], QImage.Format.Format_RGB888)
+        # Преобразование QImage в QPixmap
+        pix = QPixmap.fromImage(qim)
+        self.labelFoto.setPixmap(pix)
 
     def read_czi_image(self, filename, norm=True):
         with czifile.CziFile(filename) as czi:
@@ -137,39 +152,29 @@ class Func(Ui_MainWindow):
                 info = np.iinfo(image.dtype)
                 image = image.astype(np.float64) / info.max  # normalize the data to 0-1
                 image = (255 * image).astype(np.uint8)  # normalize the data to 0-255
-                # Предположим, что 'b' - это ваш массив-изображение
-                img = Image.fromarray(image)
-                # Преобразование PIL Image в QImage
-                qim = QImage(img.tobytes(), img.size[0], img.size[1], QImage.Format.Format_RGB888)
 
-                # Преобразование QImage в QPixmap
-                pix = QPixmap.fromImage(qim)
-                self.labelFoto.setPixmap(pix)
-                self.PhotoSave(pix, filename)
+                image = np.ascontiguousarray(image)
+                self.PhotoSave(image, filename)
             # image = np.ascontiguousarray(image)
             # metadata = czi.metadata(raw=True)
 
             # return image, metadata
-
-            #####################################
 
     # Выбор изображения и добавление его в окно для исходного изображения:
     def add_image(self):
         filename, _ = QFileDialog.getOpenFileName(None, "Open Image", os.getcwd(), "Images (*.png *.jpg *.czi)")
         if filename:
             if filename.endswith(".jpg"):
-                # window_size = self.labelFoto.size()
-                pixmap = QPixmap(filename).scaled(450, 450, Qt.AspectRatioMode.KeepAspectRatio)
-                # window_size.width(), window_size.height(), Qt.AspectRatioMode.KeepAspectRatio
-                self.labelFoto.setPixmap(pixmap)
-                self.PhotoSave(pixmap, filename)
+                image = mpimg.imread(filename)
+                image = (255 * image).astype(np.uint8)  # normalize the data to 0-255
+                image = np.ascontiguousarray(image)
+                self.PhotoSave(image, filename)
 
             if filename.endswith(".png"):
-                # window_size = self.labelFoto.size()
-                pixmap = QPixmap(filename).scaled(450, 450, Qt.AspectRatioMode.KeepAspectRatio)
-                # window_size.width() #window_size.height(), Qt.AspectRatioMode.KeepAspectRatio
-                self.labelFoto.setPixmap(pixmap)
-                self.PhotoSave(pixmap, filename)
+                image = mpimg.imread(filename)
+                image = (255 * image).astype(np.uint8)  # normalize the data to 0-255
+                image = np.ascontiguousarray(image)
+                self.PhotoSave(image, filename)
 
             if filename.endswith(".czi"):
                 self.read_czi_image(filename)  # self.process_image(filename)
