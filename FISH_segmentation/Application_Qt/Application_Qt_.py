@@ -53,18 +53,9 @@ class Func(Ui_MainWindow):
                 os.makedirs("..\\Photo_Qt\\photos")
 
             for r in predictions:
-                #im_array = r.plot(labels=False, line_width=1)  # plot a BGR numpy array of predictions
-                #im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
-                #im.save("..\\Photo_Qt\\photos\\" + Func.FILENAME + ".png")
-                masks = r.masks.data.numpy().transpose(1, 2, 0)
-                classes = r.boxes.cls.data.numpy()
-                
-                for mask, cls in zip(np.rollaxis(masks, 2), classes):
-                    mask = cv2.resize(mask, dsize=self.image.shape[:2], interpolation=cv2.INTER_LINEAR)
-                    mask3d = (np.repeat(mask[..., np.newaxis], 3, axis=-1) > 0).astype(bool)
-                    masked_image = np.ma.masked_where(np.invert(mask3d), self.image)
-                    cell = Cell(masked_image, Cell.CellType(int(cls)))
-                    self.cells.append(cell)
+                im_array = r.plot(labels=False, line_width=1)  # plot a BGR numpy array of predictions
+                im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
+                im.save("..\\Photo_Qt\\photos\\" + Func.FILENAME + ".png")
 
             Path = ("..\\Photo_Qt\\" + "photos" + "\\" + Func.FILENAME + ".png")  # Берем путь, чтобы вывести на экран;
             pixmap = QPixmap(Path)
