@@ -5,10 +5,12 @@ import matplotlib.image as mpimg
 from PIL import Image
 from matplotlib import pyplot as plt
 from PyQt6 import QtWidgets
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import QFileDialog
 from ultralytics import YOLO
 from Application_Qt_module_ui import Ui_MainWindow
+from ChromosomePatch import ChromosomeCellDetector
 
 
 class Func(Ui_MainWindow):
@@ -27,7 +29,8 @@ class Func(Ui_MainWindow):
     # Клик по кнопке -> (вызов функции):
     def add_functions(self):
         self.pushButtonStart.clicked.connect(self.add_image)
-        self.pushButtonSeg.clicked.connect(self.predict_image)
+        # self.pushButtonSeg.clicked.connect(self.predict_image)
+        self.pushButtonSeg.clicked.connect(self.predict_image_ChromosomePatch)
 
     # Основная фун-я по сегментации:
     def predict_image(self):  # ИСПРАВИТЬ: не допускать точности, ниже 0.2;
@@ -83,6 +86,35 @@ class Func(Ui_MainWindow):
             )
             self.Reference.setText(ref)
 
+    def predict_image_ChromosomePatch(self):
+        if Func.FILEPATH != "-1":  # Значит, что картинка была сохранена, путь есть;
+            print(Func.FILEPATH)
+            Accuracy = float(self.labelAccuracy.text())  # Берем точность с поля;
+            img = mpimg.imread(Func.FILEPATH)
+            img = (255 * img).astype(np.uint8)  # normalize the data to 0-255
+            img = np.ascontiguousarray(img)
+
+            detectorTest = ChromosomeCellDetector(img)
+            img = detectorTest.rgba2rgb(img)
+            detector = ChromosomeCellDetector(img)
+            detector.find_cells(Accuracy)
+            detector.detect_chromosomes()
+
+            fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)
+            ax = detector.plot(ax)
+            fig.patch.set_visible(False)
+            ax.axis('off')
+
+            if not os.path.exists("..\\Photo_Qt\\photos"):  # Создать папку, если ее нет;
+                os.makedirs("..\\Photo_Qt\\photos")
+            fname = "..\\Photo_Qt\\photos\\" + Func.FILENAME + ".png"
+            fig.savefig(fname, dpi='figure', bbox_inches='tight', format='png')
+
+            Path = ("..\\Photo_Qt\\" + "photos" + "\\" + Func.FILENAME + ".png")  # Берем путь, чтобы вывести на экран;
+
+            pixmap = QPixmap(Path).scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio)
+            self.label_2.setPixmap(pixmap)
+
     # фун-я, сохраняющая картинку:
     def PhotoSave(self, image, filename):
         folder_name = "..\\Photo_Qt"  # Имя папки;
@@ -91,12 +123,15 @@ class Func(Ui_MainWindow):
             os.makedirs(folder_name)
 
         Image_name = os.path.splitext(os.path.basename(filename))[0]  # Для получения имени файла
-        dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..\\Photo_Qt")
+        dir_path = "..\\Photo_Qt"
+        print(dir_path)
         jpg = ".png"
         filepath = os.path.join(dir_path, Image_name)  # Объединяет путь к директории (dir_path)
         filepath = filepath + jpg
         Func.FILEPATH = filepath
         Func.FILENAME = Image_name
+        detectorTest = ChromosomeCellDetector(image)
+        image = detectorTest.rgba2rgb(image)
         plt.imsave(filepath, image)
 
         img = Image.fromarray(image)
