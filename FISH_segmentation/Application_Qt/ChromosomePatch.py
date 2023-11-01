@@ -69,7 +69,7 @@ class ChromosomeCellDetector:
         rgb[:, :, 0] = r * a + (1.0 - a) * R
         rgb[:, :, 1] = g * a + (1.0 - a) * G
         rgb[:, :, 2] = b * a + (1.0 - a) * B
-        return np.asarray(rgb, dtype='uint8')    
+        return np.asarray(rgb, dtype='uint8')
 
     def find_cells(self, confidence: float = 0.5):
         if self.cells:
