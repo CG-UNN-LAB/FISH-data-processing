@@ -1,4 +1,3 @@
-import io
 import os
 import czifile
 import numpy as np
@@ -6,12 +5,10 @@ import matplotlib.image as mpimg
 from PIL import Image
 from matplotlib import pyplot as plt
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import QFileDialog
 from ultralytics import YOLO
 from Application_Qt_module_ui import Ui_MainWindow
-from ChromosomePatch import ChromosomeCellDetector
 
 
 class Func(Ui_MainWindow):
@@ -50,15 +47,24 @@ class Func(Ui_MainWindow):
                 save_txt=False,
                 # Сохранит рядом с обработанным изображением в папку Ui_MainWindow.FILENAME;
                 conf=float(Accuracy),  # Точность;
-            )  # Толщина границ выделения;
+            )
 
             if not os.path.exists("..\\Photo_Qt\\photos"):  # Создать папку, если ее нет;
                 os.makedirs("..\\Photo_Qt\\photos")
 
             for r in predictions:
-                im_array = r.plot(labels=False, line_width=1)  # plot a BGR numpy array of predictions
-                im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
-                im.save("..\\Photo_Qt\\photos\\" + Func.FILENAME + ".png")
+                #im_array = r.plot(labels=False, line_width=1)  # plot a BGR numpy array of predictions
+                #im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
+                #im.save("..\\Photo_Qt\\photos\\" + Func.FILENAME + ".png")
+                masks = r.masks.data.numpy().transpose(1, 2, 0)
+                classes = r.boxes.cls.data.numpy()
+                
+                for mask, cls in zip(np.rollaxis(masks, 2), classes):
+                    mask = cv2.resize(mask, dsize=self.image.shape[:2], interpolation=cv2.INTER_LINEAR)
+                    mask3d = (np.repeat(mask[..., np.newaxis], 3, axis=-1) > 0).astype(bool)
+                    masked_image = np.ma.masked_where(np.invert(mask3d), self.image)
+                    cell = Cell(masked_image, Cell.CellType(int(cls)))
+                    self.cells.append(cell)
 
             Path = ("..\\Photo_Qt\\" + "photos" + "\\" + Func.FILENAME + ".png")  # Берем путь, чтобы вывести на экран;
             pixmap = QPixmap(Path)
