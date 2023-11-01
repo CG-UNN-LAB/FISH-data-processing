@@ -43,7 +43,7 @@ if __name__ == '__main__':
         if not os.path.exists(folder_name):  # Создать папку, если ее нет;
             os.makedirs(folder_name)
         Image_name = os.path.splitext(os.path.basename(args.input))[0]  # Для получения имени файла
-        plt.imsave(folder_name+"\\"+Image_name+".png", image)
+        plt.imsave(folder_name + "\\" + Image_name + ".png", image)
     else:
         image = mpimg.imread(args.input)
         image = (255 * image).astype(np.uint8)  # normalize the data to 0-255
