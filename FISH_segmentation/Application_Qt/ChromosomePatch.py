@@ -54,9 +54,8 @@ class ChromosomeCellDetector:
             for p in cell.green_chromosomes:
                 circle = plt.Circle((p[1], p[0]), radius=3, color='green', fill=False, linestyle='--')
                 ax.add_patch(circle)
-
         return ax
-    
+
     def rgba2rgb(self, rgba, background=(255, 255, 255)):
         row, col, ch = rgba.shape
         if ch == 3:
