@@ -98,10 +98,9 @@ class Func(Ui_MainWindow):
             img = detectorTest.rgba2rgb(img)
             detector = ChromosomeCellDetector(img)
             number_explode, number_whole = detector.find_cells(Accuracy)
-            # number_explode = detector.self.N
-            # number_whole = detector.numberWhole
             detector.detect_chromosomes()
-
+            RedChromosome = detector.RedChromosome
+            GreenChromosome = detector.GreenChromosome
             fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)
             ax = detector.plot(ax)
             fig.patch.set_visible(False)
@@ -121,6 +120,10 @@ class Func(Ui_MainWindow):
                 + str(number_whole)
                 + "\nExplode cell: "
                 + str(number_explode)
+                + "\nRed chromosome: "
+                + str(RedChromosome)
+                + "\nGreen chromosome: "
+                + str(GreenChromosome)
             )
             self.Reference.setText(ref)
 

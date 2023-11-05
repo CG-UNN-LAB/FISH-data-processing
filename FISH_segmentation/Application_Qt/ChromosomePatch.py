@@ -31,6 +31,8 @@ class Cell:
 
 
 class ChromosomeCellDetector:
+    RedChromosome = 0
+    GreenChromosome = 0
     MODEL_PATH = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "..\\Model\\my_yolov8_model_core_segmentation.pt")
     CELLS_DETECTOR = YOLO(MODEL_PATH)
@@ -130,6 +132,8 @@ class ChromosomeCellDetector:
         green_chromosome_candidates = ChromosomeCellDetector.__get_chromosome_candidates(green_channel)
 
         closeness = 1.0
+        ChromosomeCellDetector.RedChromosome = 0
+        ChromosomeCellDetector.GreenChromosome = 0 
         self.__filter_chromosomes(
             red_chromosome_candidates,
             'red',
@@ -162,8 +166,10 @@ class ChromosomeCellDetector:
                     accepted[idx] = True
                     if chromosome_type == 'red':
                         cell.add_red_chromosome(candidate)
+                        ChromosomeCellDetector.RedChromosome += 1
                     elif chromosome_type == 'green':
                         cell.add_green_chromosome(candidate)
+                        ChromosomeCellDetector.GreenChromosome += 1
                     break
 
     @staticmethod
