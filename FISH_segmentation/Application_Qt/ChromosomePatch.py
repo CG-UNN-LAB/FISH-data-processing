@@ -133,7 +133,7 @@ class ChromosomeCellDetector:
 
         closeness = 1.0
         ChromosomeCellDetector.RedChromosome = 0
-        ChromosomeCellDetector.GreenChromosome = 0 
+        ChromosomeCellDetector.GreenChromosome = 0
         self.__filter_chromosomes(
             red_chromosome_candidates,
             'red',
