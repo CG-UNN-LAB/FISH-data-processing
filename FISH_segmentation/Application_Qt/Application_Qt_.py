@@ -97,7 +97,9 @@ class Func(Ui_MainWindow):
             detectorTest = ChromosomeCellDetector(img)
             img = detectorTest.rgba2rgb(img)
             detector = ChromosomeCellDetector(img)
-            detector.find_cells(Accuracy)
+            number_explode, number_whole = detector.find_cells(Accuracy)
+            # number_explode = detector.self.N
+            # number_whole = detector.numberWhole
             detector.detect_chromosomes()
 
             fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)
@@ -114,6 +116,13 @@ class Func(Ui_MainWindow):
 
             pixmap = QPixmap(Path).scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio)
             self.label_2.setPixmap(pixmap)
+            ref = (
+                "Whole cell: "
+                + str(number_whole)
+                + "\nExplode cell: "
+                + str(number_explode)
+            )
+            self.Reference.setText(ref)
 
     # фун-я, сохраняющая картинку:
     def PhotoSave(self, image, filename):

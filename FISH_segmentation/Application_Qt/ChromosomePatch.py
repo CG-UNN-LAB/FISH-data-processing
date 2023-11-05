@@ -102,6 +102,21 @@ class ChromosomeCellDetector:
 
                 cell = Cell(masked_image, Cell.CellType(int(cls)))
                 self.cells.append(cell)
+        # Доп.Информация:
+        names = ChromosomeCellDetector.CELLS_DETECTOR.names
+        number_whole = 0
+        number_explode = 0
+        for r in predictions:
+            for c in r.boxes.cls:
+                if names[int(c)] == "Whole cell":
+                    number_whole += 1
+                if names[int(c)] == "Explode cell":
+                    number_explode += 1
+        print("Explode:")
+        print(number_explode)
+        print("Whole:")
+        print(number_whole)
+        return number_explode, number_whole
 
     def detect_chromosomes(self):
         unsharped_image = ChromosomeCellDetector.__unsharp_mask(self.image,
