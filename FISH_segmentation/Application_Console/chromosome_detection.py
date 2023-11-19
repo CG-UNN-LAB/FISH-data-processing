@@ -137,7 +137,7 @@ class ChromosomeCellDetector:
                         center_of_mass[0],
                         len(cell.green_chromosomes),
                         len(cell.red_chromosomes),
-                        "Exploded" if cell.cell_type == Cell.CellType.EXPLODED else "Whole"
+                        "Exploded" if cell.cell_type == Cell.CellType.EXPLODED else "Whole",
                     ]
                     writer.writerow(row_data)
 
