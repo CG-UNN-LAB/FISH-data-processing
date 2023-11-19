@@ -25,6 +25,11 @@ def cli_argument_parser():
         type=float,
         help='Threshold for object prediction',
         default=0.5)
+    parser.add_argument(
+        '-o', '--output',
+        dest='output',
+        help='Name of output first table (.csv)',
+        default="ouput.csv")
 
     args = parser.parse_args()
 
@@ -108,6 +113,9 @@ if __name__ == '__main__':
         fname = f'..\\Photo_Console_Find_All\\Photo_CZI\\With_predict\\{Image_name}.png'
         fig.savefig(fname, dpi=300, format='png')
 
+        log.info(f'{"Save information of prediction to .csv"}')
+        detector.write_to_csv(args.output, folder_name_for_image_with_predict, Image_name)
+
     for image_path_png in images_paths_png:
         try:
             image = mpimg.imread(image_path_png)
@@ -140,6 +148,9 @@ if __name__ == '__main__':
         fname = f'..\\Photo_Console_Find_All\\Photo_PNG\\With_predict\\{Image_name}.png'
         fig.savefig(fname, dpi=300, format='png')
 
+        log.info(f'{"Save information of prediction to .csv"}')
+        detector.write_to_csv(args.output, folder_name_for_image_with_predict, Image_name)
+
     for image_path_jpg in images_paths_jpg:
         try:
             image = mpimg.imread(image_path_jpg)
@@ -160,11 +171,14 @@ if __name__ == '__main__':
 
         fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)
         ax = detector.plot(ax)
-        fig.patch.set_visible(False)
-        ax.axis('off')
+        # fig.patch.set_visible(False)
+        # ax.axis('off')
 
         folder_name_for_image_with_predict = "..\\Photo_Console_Find_All\\Photo_JPG\\With_predict"
         if not os.path.exists(folder_name_for_image_with_predict):
             os.makedirs(folder_name_for_image_with_predict)
         fname = f'..\\Photo_Console_Find_All\\Photo_JPG\\With_predict\\{Image_name}.png'
         fig.savefig(fname, dpi=300, format='png')
+
+        log.info(f'{"Save information of prediction to .csv"}')
+        detector.write_to_csv(args.output, folder_name_for_image_with_predict, Image_name)

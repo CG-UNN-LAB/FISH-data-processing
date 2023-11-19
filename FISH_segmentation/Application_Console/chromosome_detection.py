@@ -9,6 +9,11 @@ import skimage
 from matplotlib import pyplot as plt
 from ultralytics import YOLO
 from scipy import ndimage
+import logging
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Cell:
@@ -106,23 +111,30 @@ class ChromosomeCellDetector:
                         cell.add_center_of_mass(center_of_mass)
 
     def write_to_csv(self, output_file, folder_path, file_name):
-        with open(output_file, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=';')  # Указываем точку с запятой как разделитель
+        file_exists = os.path.isfile(output_file)
+        with open(output_file, 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';')
 
-            # Write header
-            header = ["Folder Path", "File Name", "Cell Number", "Center X", "Center Y",
-                      "Green Chromosomes", "Red Chromosomes", "Cell Type"]
-            writer.writerow(header)
+            # Если файл только что создан, добавляем заголовок
+            if not file_exists or csvfile.tell() == 0:
+                header = ["Folder Path", "File Name", "Cell Number", "Center X", "Center Y",
+                          "Green Chromosomes", "Red Chromosomes", "Cell Type"]
+                writer.writerow(header)
 
-            # Write data
+            if not file_exists:
+                logger.info(f" Файл {output_file} был создан, заголовок добавлен.")
+            else:
+                logger.info(f" Файл {output_file} уже существует, данные будут записаны к уже существующим.")
+
+            # Далее ваш код записи данных в CSV, например:
             for idx, cell in enumerate(self.cells):
                 for center_of_mass in cell.center_of_mass:
                     row_data = [
                         folder_path,
                         file_name,
                         idx + 1,
-                        center_of_mass[1],  # Координата X центра масс
-                        center_of_mass[0],  # Координата Y центра масс
+                        center_of_mass[1],
+                        center_of_mass[0],
                         len(cell.green_chromosomes),
                         len(cell.red_chromosomes),
                         "Exploded" if cell.cell_type == Cell.CellType.EXPLODED else "Whole",
