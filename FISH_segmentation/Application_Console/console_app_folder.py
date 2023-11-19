@@ -48,7 +48,7 @@ def rgba2rgb(rgba, background=(255, 255, 255)):
 
 def find_images_by_extension(root_folder, extension):
     matches = []
-    for root, dirs, files in os.walk(root_folder):
+    for root, files in os.walk(root_folder):
         for basename in files:
             if fnmatch.filter(basename, extension):
                 matches.append(os.path.join(root, basename))
@@ -85,7 +85,7 @@ if __name__ == '__main__':
             if not os.path.exists(folder_name_for_image_without_predict):
                 os.makedirs(folder_name_for_image_without_predict)
             Image_name = os.path.splitext(os.path.basename(image_path_czi))[0]
-            plt.imsave(folder_name_for_image_without_predict+"\\"+Image_name+".png", image)
+            plt.imsave(folder_name_for_image_without_predict + "\\" + Image_name+".png", image)
 
             detector = ChromosomeCellDetector(image)
             log.info(f'{"Perform segmentation"}')
@@ -118,7 +118,7 @@ if __name__ == '__main__':
             if not os.path.exists(folder_name_for_image_without_predict):
                 os.makedirs(folder_name_for_image_without_predict)
             Image_name = os.path.splitext(os.path.basename(image_path_png))[0]
-            plt.imsave(folder_name_for_image_without_predict+"\\"+Image_name+".png", image)
+            plt.imsave(folder_name_for_image_without_predict + "\\" + Image_name + ".png", image)
             detector = ChromosomeCellDetector(image)
             log.info(f'{"Perform segmentation"}')
             detector.find_cells(confidence=args.confidence)
@@ -148,7 +148,7 @@ if __name__ == '__main__':
             if not os.path.exists(folder_name_for_image_without_predict):
                 os.makedirs(folder_name_for_image_without_predict)
             Image_name = os.path.splitext(os.path.basename(image_path_jpg))[0]
-            plt.imsave(folder_name_for_image_without_predict+"\\"+Image_name+".png", image)
+            plt.imsave(folder_name_for_image_without_predict + "\\" + Image_name + ".png", image)
             detector = ChromosomeCellDetector(image)
             log.info(f'{"Perform segmentation"}')
             detector.find_cells(confidence=args.confidence)
