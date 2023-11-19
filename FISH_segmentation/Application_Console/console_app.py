@@ -24,7 +24,11 @@ def cli_argument_parser():
         type=float,
         help='Threshold for object prediction',
         default=0.5)
-
+    parser.add_argument(
+        '-o', '--output',
+        dest='output',
+        help='Name of output first table (.csv)',
+        default="ouput.csv")
     args = parser.parse_args()
 
     return args
@@ -105,6 +109,5 @@ ax = detector.plot(ax)
 fname = f'{folder_name_with_p}\\{Image_name}.png'
 fig.savefig(fname, dpi='figure', format='png', transparent=True)
 
-output_csv_path = "output.csv"
 log.info(f'{"Save information of prediction to .csv"}')
-detector.write_to_csv(output_csv_path, folder_name_with_p, Image_name)
+detector.write_to_csv(args.output, folder_name_with_p, Image_name)
