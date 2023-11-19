@@ -85,7 +85,7 @@ if __name__ == '__main__':
             if not os.path.exists(folder_name_for_image_without_predict):
                 os.makedirs(folder_name_for_image_without_predict)
             Image_name = os.path.splitext(os.path.basename(image_path_czi))[0]
-            plt.imsave(folder_name_for_image_without_predict + "\\" + Image_name+".png", image)
+            plt.imsave(folder_name_for_image_without_predict + "\\" + Image_name + ".png", image)
 
             detector = ChromosomeCellDetector(image)
             log.info(f'{"Perform segmentation"}')
