@@ -1,6 +1,6 @@
 import enum
 import os
-
+import csv
 import cv2
 import imutils
 import numpy as np
@@ -8,6 +8,11 @@ import scipy
 import skimage
 from matplotlib import pyplot as plt
 from ultralytics import YOLO
+from scipy import ndimage
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Cell:
@@ -22,6 +27,10 @@ class Cell:
 
         self.red_chromosomes = []
         self.green_chromosomes = []
+        self.center_of_mass = []
+
+    def add_center_of_mass(self, center_of_mass):
+        self.center_of_mass.append(center_of_mass)
 
     def add_red_chromosome(self, red_chromosome):
         self.red_chromosomes.append(red_chromosome)
@@ -34,7 +43,7 @@ class ChromosomeCellDetector:
     RedChromosome = 0
     GreenChromosome = 0
     MODEL_PATH = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "..\\Model\\my_yolov8_model_core_segmentation.pt")
+        os.path.dirname(os.path.abspath(__file__)), "..\\Model\\my_yolov8_model_core_segmentation_plus_plus.pt")
     CELLS_DETECTOR = YOLO(MODEL_PATH)
 
     def __init__(self, image: np.ndarray):
@@ -43,7 +52,6 @@ class ChromosomeCellDetector:
 
     def plot(self, ax=None):
         ax.imshow(self.image)
-
         for cell in self.cells:
             mask = np.invert(cell.masked_area.mask[..., 0]).astype(np.uint8)
             contour_color = 'green' if cell.cell_type == Cell.CellType.WHOLE else 'red'
@@ -104,6 +112,15 @@ class ChromosomeCellDetector:
 
                 cell = Cell(masked_image, Cell.CellType(int(cls)))
                 self.cells.append(cell)
+
+                # Найдем координаты центра масс каждой клетки
+                if cell.cell_type == Cell.CellType.EXPLODED or cell.cell_type == Cell.CellType.WHOLE:
+                    labeled_mask, num_labels = ndimage.label(mask)
+                    for label in range(1, num_labels + 1):
+                        np.argwhere(labeled_mask == label)
+                        center_of_mass = ndimage.center_of_mass(mask, labeled_mask, label)
+                        cell.add_center_of_mass(center_of_mass)
+
         # Доп.Информация:
         names = ChromosomeCellDetector.CELLS_DETECTOR.names
         number_whole = 0
@@ -119,6 +136,37 @@ class ChromosomeCellDetector:
         print("Whole:")
         print(number_whole)
         return number_explode, number_whole
+
+    def write_to_csv(self, output_file, folder_path, file_name):
+        file_exists = os.path.isfile(output_file)
+        with open(output_file, 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';')
+
+            # Если файл только что создан, добавляем заголовок
+            if not file_exists or csvfile.tell() == 0:
+                header = ["Folder Path", "File Name", "Cell Number", "Center X", "Center Y",
+                          "Green Chromosomes", "Red Chromosomes", "Cell Type"]
+                writer.writerow(header)
+
+            if not file_exists:
+                logger.info(f" Файл {output_file} был создан, заголовок добавлен.")
+            else:
+                logger.info(f" Файл {output_file} уже существует, данные будут записаны к уже существующим.")
+
+            # Далее ваш код записи данных в CSV, например:
+            for idx, cell in enumerate(self.cells):
+                for center_of_mass in cell.center_of_mass:
+                    row_data = [
+                        folder_path,
+                        file_name,
+                        idx + 1,
+                        center_of_mass[1],
+                        center_of_mass[0],
+                        len(cell.green_chromosomes),
+                        len(cell.red_chromosomes),
+                        "Exploded" if cell.cell_type == Cell.CellType.EXPLODED else "Whole",
+                    ]
+                    writer.writerow(row_data)
 
     def detect_chromosomes(self):
         unsharped_image = ChromosomeCellDetector.__unsharp_mask(self.image,
