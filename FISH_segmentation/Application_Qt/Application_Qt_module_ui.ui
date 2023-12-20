@@ -229,7 +229,7 @@ QPushButton:pressed {
            </widget>
           </item>
           <item row="4" column="0">
-           <widget class="QCheckBox" name="checkBox_2">
+           <widget class="QCheckBox" name="checkBoxSave">
             <property name="styleSheet">
              <string notr="true">background: rgba(204, 224, 232, 0.5)</string>
             </property>
@@ -296,7 +296,7 @@ border-radius: 10px;
               <widget class="QListWidget" name="SelectionList">
                <property name="maximumSize">
                 <size>
-                 <width>80</width>
+                 <width>100</width>
                  <height>16777215</height>
                 </size>
                </property>

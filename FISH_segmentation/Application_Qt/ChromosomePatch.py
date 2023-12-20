@@ -28,6 +28,7 @@ class Cell:
         self.red_chromosomes = []
         self.green_chromosomes = []
         self.center_of_mass = []
+        self.Type = -1
 
     def add_center_of_mass(self, center_of_mass):
         self.center_of_mass.append(center_of_mass)
@@ -42,6 +43,8 @@ class Cell:
 class ChromosomeCellDetector:
     RedChromosome = 0
     GreenChromosome = 0
+    NumberExplode = 0
+    NumberWhole = 0
     MODEL_PATH = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "..\\Model\\my_yolov8_model_core_segmentation_plus_plus.pt")
     CELLS_DETECTOR = YOLO(MODEL_PATH)
@@ -49,6 +52,7 @@ class ChromosomeCellDetector:
     def __init__(self, image: np.ndarray):
         self.image: np.ndarray = image
         self.cells: list[Cell] = []
+        self.Radius = []
 
     def plot(self, ax=None):
         ax.imshow(self.image)
@@ -89,7 +93,7 @@ class ChromosomeCellDetector:
             classes=[0, 1],
             conf=confidence,
         )
-
+        self.Radius.clear()
         for prediction in predictions:
             masks = prediction.masks.data.numpy().transpose(1, 2, 0)
             classes = prediction.boxes.cls.data.numpy()
@@ -121,21 +125,26 @@ class ChromosomeCellDetector:
                         center_of_mass = ndimage.center_of_mass(mask, labeled_mask, label)
                         cell.add_center_of_mass(center_of_mass)
 
+                        distances = np.sqrt(np.sum((np.argwhere(labeled_mask == label) -
+                                                    np.array(center_of_mass))**2, axis=1))
+                        # Находим максимальное расстояние, которое и будет радиусом вокруг центра масс
+                        self.Radius.append(np.max(distances))
+
         # Доп.Информация:
         names = ChromosomeCellDetector.CELLS_DETECTOR.names
-        number_whole = 0
-        number_explode = 0
+        self.NumberWhole = 0
+        self.NumberExplode = 0
         for r in predictions:
             for c in r.boxes.cls:
                 if names[int(c)] == "Whole cell":
-                    number_whole += 1
+                    self.NumberWhole += 1
                 if names[int(c)] == "Explode cell":
-                    number_explode += 1
+                    self.NumberExplode += 1
         print("Explode:")
-        print(number_explode)
+        print(self.NumberExplode)
         print("Whole:")
-        print(number_whole)
-        return number_explode, number_whole
+        print(self.NumberWhole)
+        return self.NumberExplode, self.NumberWhole
 
     def write_to_csv(self, output_file, folder_path, file_name):
         file_exists = os.path.isfile(output_file)
@@ -166,6 +175,10 @@ class ChromosomeCellDetector:
                         len(cell.red_chromosomes),
                         "Exploded" if cell.cell_type == Cell.CellType.EXPLODED else "Whole",
                     ]
+                    if (cell.cell_type == Cell.CellType.EXPLODED):
+                        cell.Type = 0
+                    else:
+                        cell.Type = 1,
                     writer.writerow(row_data)
 
     def detect_chromosomes(self):
@@ -180,8 +193,8 @@ class ChromosomeCellDetector:
         green_chromosome_candidates = ChromosomeCellDetector.__get_chromosome_candidates(green_channel)
 
         closeness = 1.0
-        ChromosomeCellDetector.RedChromosome = 0
-        ChromosomeCellDetector.GreenChromosome = 0
+        self.RedChromosome = 0
+        self.GreenChromosome = 0
         self.__filter_chromosomes(
             red_chromosome_candidates,
             'red',
@@ -214,10 +227,10 @@ class ChromosomeCellDetector:
                     accepted[idx] = True
                     if chromosome_type == 'red':
                         cell.add_red_chromosome(candidate)
-                        ChromosomeCellDetector.RedChromosome += 1
+                        self.RedChromosome += 1
                     elif chromosome_type == 'green':
                         cell.add_green_chromosome(candidate)
-                        ChromosomeCellDetector.GreenChromosome += 1
+                        self.GreenChromosome += 1
                     break
 
     @staticmethod

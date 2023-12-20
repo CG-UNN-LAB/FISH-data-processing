@@ -138,10 +138,10 @@ class Ui_MainWindow(object):
         )
         self.pushButtonStart.setObjectName("pushButtonStart")
         self.gridLayout.addWidget(self.pushButtonStart, 0, 0, 1, 1)
-        self.checkBox_2 = QtWidgets.QCheckBox(parent=self.gridGroupBox)
-        self.checkBox_2.setStyleSheet("background: rgba(204, 224, 232, 0.5)")
-        self.checkBox_2.setObjectName("checkBox_2")
-        self.gridLayout.addWidget(self.checkBox_2, 4, 0, 1, 1)
+        self.checkBoxSave = QtWidgets.QCheckBox(parent=self.gridGroupBox)
+        self.checkBoxSave.setStyleSheet("background: rgba(204, 224, 232, 0.5)")
+        self.checkBoxSave.setObjectName("checkBoxSave")
+        self.gridLayout.addWidget(self.checkBoxSave, 4, 0, 1, 1)
         self.verticalGroupBox_2 = QtWidgets.QGroupBox(parent=self.gridGroupBox)
         self.verticalGroupBox_2.setMouseTracking(False)
         self.verticalGroupBox_2.setTabletTracking(False)
@@ -170,7 +170,7 @@ class Ui_MainWindow(object):
         self.DataLabel.setObjectName("DataLabel")
         self.horizontalLayout_3.addWidget(self.DataLabel)
         self.SelectionList = QtWidgets.QListWidget(parent=self.verticalGroupBox_2)
-        self.SelectionList.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.SelectionList.setMaximumSize(QtCore.QSize(100, 16777215))
         self.SelectionList.setStyleSheet(
             "#SelectionList\n"
             "{\n"
@@ -286,7 +286,7 @@ class Ui_MainWindow(object):
         )
         self.pushButtonSeg.setText(_translate("MainWindow", "Cегментировать"))
         self.pushButtonStart.setText(_translate("MainWindow", "Выбрать фото"))
-        self.checkBox_2.setText(_translate("MainWindow", "Сохранить все"))
+        self.checkBoxSave.setText(_translate("MainWindow", "Сохранить все"))
         item = self.SelectionTable.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Номер клетки"))
         item = self.SelectionTable.horizontalHeaderItem(1)
