@@ -44,9 +44,7 @@ class Func(Ui_MainWindow):
         self.SelectionList.clicked.connect(self.SelectionListFunc)
         self.SelectionTable.clicked.connect(self.SelectionTableFunc)
 
-        self.deleteShortcut = QtGui.QShortcut(
-            QtCore.Qt.Key.Key_Delete, self.SelectionList
-        )
+        self.deleteShortcut = QtGui.QShortcut(QtCore.Qt.Key.Key_Delete, self.SelectionList)
         self.deleteShortcut.activated.connect(self.ListFuncDelete)
 
     def SelectionTableFunc(self):
@@ -70,9 +68,7 @@ class Func(Ui_MainWindow):
             image = cv2.resize(image, desired_size)
 
             # Нарисовать круг вокруг выбранных координат
-            cv2.circle(
-                image, (int(float(x)), int(float(y))), int(float(radius)), (231, 242, 12), 2
-            )
+            cv2.circle(image, (int(float(x)), int(float(y))), int(float(radius)), (231, 242, 12), 2)
 
             # Отобразить изображение с кругом
             qimage = QImage(image, int(512), int(512), QImage.Format.Format_RGB888)
@@ -83,9 +79,7 @@ class Func(Ui_MainWindow):
     # Функция для сегментации:
     def predict_image_ChromosomePatch(self):
         is_checked = self.checkBoxSeg.isChecked()
-        if (self.SelectionListIndex == -1 and not is_checked) or len(
-            self.PhotoList
-        ) == 0:
+        if (self.SelectionListIndex == -1 and not is_checked) or len(self.PhotoList) == 0:
             return
         Accuracy = float(self.horizontalSlider.value() / 100)  # Берем точность с поля;
         if (Accuracy >= 0.98):
@@ -232,7 +226,7 @@ class Func(Ui_MainWindow):
                     self.SelectionTable.setItem(index, 2, QTableWidgetItem(str(center_of_mass[0])))
                     self.SelectionTable.setItem(index, 3, QTableWidgetItem(str(len(cell.green_chromosomes))))
                     self.SelectionTable.setItem(index, 4, QTableWidgetItem(str(len(cell.red_chromosomes))))
-                    self.SelectionTable.setItem(index, 5, QTableWidgetItem("Exploded" if cell.Type == 0 else "Whole"),)
+                    self.SelectionTable.setItem(index, 5, QTableWidgetItem("Exploded" if cell.Type == 0 else "Whole"))
                     index += 1
 
     def ListFuncDelete(self):
@@ -267,8 +261,8 @@ class Func(Ui_MainWindow):
                 if not os.path.exists(Folder_Path + "\\PhotoSeg"):
                     os.makedirs(Folder_Path + "\\PhotoSeg")
                 for name in range(0, len(self.PhotoSegmentationNameList)):
-                    plt.imsave(Folder_Path + "\\PhotoSeg" + "\\" +
-                               self.PhotoNameList[self.PhotoSegmentationNameList[name]]
+                    plt.imsave(Folder_Path + "\\PhotoSeg" + "\\" 
+                               + self.PhotoNameList[self.PhotoSegmentationNameList[name]]
                                + ".png", self.PhotoSegmentationList[name])
 
         else:
