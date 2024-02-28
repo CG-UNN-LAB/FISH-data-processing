@@ -252,6 +252,7 @@ class Func(Ui_MainWindow):
         for name in range(0, len(self.PhotoSegmentationNameList)):
             if self.PhotoSegmentationNameList[name] >= currentRow:
                 self.PhotoSegmentationNameList[name] = (self.PhotoSegmentationNameList[name] - 1)
+        self.SelectionTable.clearContents()
 
     def SavePhoto(self):
         is_checked = self.checkBoxSave.isChecked()
