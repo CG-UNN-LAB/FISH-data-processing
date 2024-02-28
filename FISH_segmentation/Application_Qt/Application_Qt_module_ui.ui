@@ -447,9 +447,36 @@ outline: none;
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="labelAccuracy">
-               <property name="text">
-                <string>0.9</string>
+              <widget class="QSlider" name="horizontalSlider">
+               <property name="mouseTracking">
+                <bool>false</bool>
+               </property>
+               <property name="tabletTracking">
+                <bool>false</bool>
+               </property>
+               <property name="acceptDrops">
+                <bool>false</bool>
+               </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>25</number>
+               </property>
+               <property name="tracking">
+                <bool>true</bool>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="invertedAppearance">
+                <bool>false</bool>
+               </property>
+               <property name="invertedControls">
+                <bool>false</bool>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksBelow</enum>
                </property>
               </widget>
              </item>

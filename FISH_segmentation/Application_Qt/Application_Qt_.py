@@ -87,7 +87,9 @@ class Func(Ui_MainWindow):
             self.PhotoList
         ) == 0:
             return
-        Accuracy = float(self.labelAccuracy.text())  # Берем точность с поля;
+        Accuracy = float(self.horizontalSlider.value() / 100)  # Берем точность с поля;
+        if (Accuracy >= 0.98):
+            Accuracy = 0.95
 
         if is_checked:
             Zero = 0
@@ -132,7 +134,7 @@ class Func(Ui_MainWindow):
                 + str(Green_Chromosome)
             )
             self.Ref.append(ref)
-            detector.write_to_csv("Списочек", "рядом", self.PhotoNameList[file])
+            # detector.write_to_csv("Списочек", "рядом", self.PhotoNameList[file])
 
         qimage = QImage(imgrgd, int(self.width), int(self.height), QImage.Format.Format_RGB888)
         pixmap = QPixmap.fromImage(qimage)
