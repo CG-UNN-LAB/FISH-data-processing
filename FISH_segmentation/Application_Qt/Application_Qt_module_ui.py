@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1083, 673)
+        MainWindow.resize(1078, 691)
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         icon = QtGui.QIcon()
         icon.addPixmap(
@@ -89,7 +89,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.PlaceForPromFotos)
         self.vboxlayout.addWidget(self.horizontalWidget)
         self.gridGroupBox = QtWidgets.QGroupBox(parent=self.verticalGroupBox)
-        self.gridGroupBox.setMaximumSize(QtCore.QSize(16777215, 170))
+        self.gridGroupBox.setMaximumSize(QtCore.QSize(16777215, 185))
         self.gridGroupBox.setStyleSheet(
             "#gridGroupBox {\n"
             "                width: 100px;\n"
@@ -100,48 +100,10 @@ class Ui_MainWindow(object):
         )
         self.gridGroupBox.setObjectName("gridGroupBox")
         self.gridLayout = QtWidgets.QGridLayout(self.gridGroupBox)
-        self.gridLayout.setContentsMargins(9, 3, 5, 2)
+        self.gridLayout.setContentsMargins(9, 3, 5, 1)
         self.gridLayout.setHorizontalSpacing(9)
         self.gridLayout.setVerticalSpacing(3)
         self.gridLayout.setObjectName("gridLayout")
-        self.pushButtonSeg = QtWidgets.QPushButton(parent=self.gridGroupBox)
-        self.pushButtonSeg.setMinimumSize(QtCore.QSize(0, 27))
-        self.pushButtonSeg.setStyleSheet(
-            "QPushButton {\n"
-            "  background-color:#4CAF50;\n"
-            "  color: white; \n"
-            "  border: 1px solid gray;\n"
-            "  border-radius: 7px;\n"
-            "}\n"
-            "\n"
-            "QPushButton:pressed {\n"
-            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-            "                                      stop: 0 #49c44d, stop: 1 #6cd470);\n"
-            "}"
-        )
-        self.pushButtonSeg.setObjectName("pushButtonSeg")
-        self.gridLayout.addWidget(self.pushButtonSeg, 1, 0, 1, 1)
-        self.pushButtonStart = QtWidgets.QPushButton(parent=self.gridGroupBox)
-        self.pushButtonStart.setMinimumSize(QtCore.QSize(0, 27))
-        self.pushButtonStart.setStyleSheet(
-            "QPushButton {\n"
-            "  background-color:#4CAF50;\n"
-            "  color: white; \n"
-            "  border: 1px solid gray;\n"
-            "  border-radius: 7px;\n"
-            "}\n"
-            "\n"
-            "QPushButton:pressed {\n"
-            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-            "                                      stop: 0 #49c44d, stop: 1 #6cd470);\n"
-            "}"
-        )
-        self.pushButtonStart.setObjectName("pushButtonStart")
-        self.gridLayout.addWidget(self.pushButtonStart, 0, 0, 1, 1)
-        self.checkBoxSave = QtWidgets.QCheckBox(parent=self.gridGroupBox)
-        self.checkBoxSave.setStyleSheet("background: rgba(204, 224, 232, 0.5)")
-        self.checkBoxSave.setObjectName("checkBoxSave")
-        self.gridLayout.addWidget(self.checkBoxSave, 4, 0, 1, 1)
         self.verticalGroupBox_2 = QtWidgets.QGroupBox(parent=self.gridGroupBox)
         self.verticalGroupBox_2.setMouseTracking(False)
         self.verticalGroupBox_2.setTabletTracking(False)
@@ -244,15 +206,63 @@ class Ui_MainWindow(object):
         self.horizontalSlider.setTabletTracking(False)
         self.horizontalSlider.setAcceptDrops(False)
         self.horizontalSlider.setAutoFillBackground(False)
-        self.horizontalSlider.setMinimum(25)
+        self.horizontalSlider.setMinimum(30)
+        self.horizontalSlider.setSingleStep(1)
+        self.horizontalSlider.setPageStep(10)
+        self.horizontalSlider.setSliderPosition(90)
         self.horizontalSlider.setTracking(True)
         self.horizontalSlider.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.horizontalSlider.setInvertedAppearance(False)
         self.horizontalSlider.setInvertedControls(False)
         self.horizontalSlider.setTickPosition(QtWidgets.QSlider.TickPosition.TicksBelow)
+        self.horizontalSlider.setTickInterval(0)
         self.horizontalSlider.setObjectName("horizontalSlider")
         self.horizontalLayout_2.addWidget(self.horizontalSlider)
         self.gridLayout.addWidget(self.horizontalWidget_2, 5, 0, 1, 1)
+        self.checkBoxSeg = QtWidgets.QCheckBox(parent=self.gridGroupBox)
+        self.checkBoxSeg.setStyleSheet(
+            "\n" "background: rgba(204, 224, 232, 0.5)\n" "\n" "\n" ""
+        )
+        self.checkBoxSeg.setObjectName("checkBoxSeg")
+        self.gridLayout.addWidget(self.checkBoxSeg, 3, 0, 1, 1)
+        self.checkBoxSave = QtWidgets.QCheckBox(parent=self.gridGroupBox)
+        self.checkBoxSave.setStyleSheet("background: rgba(204, 224, 232, 0.5)")
+        self.checkBoxSave.setObjectName("checkBoxSave")
+        self.gridLayout.addWidget(self.checkBoxSave, 4, 0, 1, 1)
+        self.pushButtonStart = QtWidgets.QPushButton(parent=self.gridGroupBox)
+        self.pushButtonStart.setMinimumSize(QtCore.QSize(0, 27))
+        self.pushButtonStart.setStyleSheet(
+            "QPushButton {\n"
+            "  background-color:#4CAF50;\n"
+            "  color: white; \n"
+            "  border: 1px solid gray;\n"
+            "  border-radius: 7px;\n"
+            "}\n"
+            "\n"
+            "QPushButton:pressed {\n"
+            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+            "                                      stop: 0 #49c44d, stop: 1 #6cd470);\n"
+            "}"
+        )
+        self.pushButtonStart.setObjectName("pushButtonStart")
+        self.gridLayout.addWidget(self.pushButtonStart, 0, 0, 1, 1)
+        self.pushButtonSeg = QtWidgets.QPushButton(parent=self.gridGroupBox)
+        self.pushButtonSeg.setMinimumSize(QtCore.QSize(0, 27))
+        self.pushButtonSeg.setStyleSheet(
+            "QPushButton {\n"
+            "  background-color:#4CAF50;\n"
+            "  color: white; \n"
+            "  border: 1px solid gray;\n"
+            "  border-radius: 7px;\n"
+            "}\n"
+            "\n"
+            "QPushButton:pressed {\n"
+            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+            "                                      stop: 0 #49c44d, stop: 1 #6cd470);\n"
+            "}"
+        )
+        self.pushButtonSeg.setObjectName("pushButtonSeg")
+        self.gridLayout.addWidget(self.pushButtonSeg, 1, 0, 1, 1)
         self.pushButtonSave = QtWidgets.QPushButton(parent=self.gridGroupBox)
         self.pushButtonSave.setMinimumSize(QtCore.QSize(0, 27))
         self.pushButtonSave.setStyleSheet(
@@ -270,12 +280,12 @@ class Ui_MainWindow(object):
         )
         self.pushButtonSave.setObjectName("pushButtonSave")
         self.gridLayout.addWidget(self.pushButtonSave, 2, 0, 1, 1)
-        self.checkBoxSeg = QtWidgets.QCheckBox(parent=self.gridGroupBox)
-        self.checkBoxSeg.setStyleSheet(
-            "\n" "background: rgba(204, 224, 232, 0.5)\n" "\n" "\n" ""
-        )
-        self.checkBoxSeg.setObjectName("checkBoxSeg")
-        self.gridLayout.addWidget(self.checkBoxSeg, 3, 0, 1, 1)
+        self.label = QtWidgets.QLabel(parent=self.gridGroupBox)
+        self.label.setMinimumSize(QtCore.QSize(0, 0))
+        self.label.setMaximumSize(QtCore.QSize(100, 10))
+        self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 6, 0, 1, 1)
         self.vboxlayout.addWidget(self.gridGroupBox)
         self.verticalLayout.addWidget(self.verticalGroupBox)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -294,9 +304,6 @@ class Ui_MainWindow(object):
         self.PlaceForPromFotos.setText(
             _translate("MainWindow", "Результат сегментации")
         )
-        self.pushButtonSeg.setText(_translate("MainWindow", "Cегментировать"))
-        self.pushButtonStart.setText(_translate("MainWindow", "Выбрать фото"))
-        self.checkBoxSave.setText(_translate("MainWindow", "Сохранить все"))
         item = self.SelectionTable.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Номер клетки"))
         item = self.SelectionTable.horizontalHeaderItem(1)
@@ -310,8 +317,12 @@ class Ui_MainWindow(object):
         item = self.SelectionTable.horizontalHeaderItem(5)
         item.setText(_translate("MainWindow", "Тип клетки"))
         self.labelStart.setText(_translate("MainWindow", "Порог точности:  "))
-        self.pushButtonSave.setText(_translate("MainWindow", "Сохранить"))
         self.checkBoxSeg.setText(_translate("MainWindow", "Сегментировать все"))
+        self.checkBoxSave.setText(_translate("MainWindow", "Сохранить все"))
+        self.pushButtonStart.setText(_translate("MainWindow", "Выбрать фото"))
+        self.pushButtonSeg.setText(_translate("MainWindow", "Cегментировать"))
+        self.pushButtonSave.setText(_translate("MainWindow", "Сохранить"))
+        self.label.setText(_translate("MainWindow", "0.9"))
 
 
 if __name__ == "__main__":

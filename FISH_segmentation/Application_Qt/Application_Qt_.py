@@ -46,6 +46,11 @@ class Func(Ui_MainWindow):
 
         self.deleteShortcut = QtGui.QShortcut(QtCore.Qt.Key.Key_Delete, self.SelectionList)
         self.deleteShortcut.activated.connect(self.ListFuncDelete)
+        self.horizontalSlider.valueChanged.connect(self.update_label)
+
+    def update_label(self):
+        value = float(self.horizontalSlider.value() / 100)
+        self.label.setText(str(value))
 
     def SelectionTableFunc(self):
         if self.SelectionListIndexProm != -1:
@@ -128,7 +133,7 @@ class Func(Ui_MainWindow):
                 + str(Green_Chromosome)
             )
             self.Ref.append(ref)
-            # detector.write_to_csv("Списочек", "рядом", self.PhotoNameList[file])
+            detector.write_to_csv("Списочек", "рядом", self.PhotoNameList[file])
 
         qimage = QImage(imgrgd, int(self.width), int(self.height), QImage.Format.Format_RGB888)
         pixmap = QPixmap.fromImage(qimage)
@@ -160,6 +165,7 @@ class Func(Ui_MainWindow):
                 if FilePaths[file].endswith(".czi"):
                     image = self.read_czi_image(FilePaths[file])
 
+                image = cv2.resize(image, (512, 512))
                 detectorTest = ChromosomeCellDetector(image)
                 image = detectorTest.rgba2rgb(image)
 
@@ -261,7 +267,7 @@ class Func(Ui_MainWindow):
                 if not os.path.exists(Folder_Path + "\\PhotoSeg"):
                     os.makedirs(Folder_Path + "\\PhotoSeg")
                 for name in range(0, len(self.PhotoSegmentationNameList)):
-                    plt.imsave(Folder_Path + "\\PhotoSeg" + "\\" 
+                    plt.imsave(Folder_Path + "\\PhotoSeg" + "\\"
                                + self.PhotoNameList[self.PhotoSegmentationNameList[name]]
                                + ".png", self.PhotoSegmentationList[name])
 

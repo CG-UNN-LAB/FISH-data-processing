@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1083</width>
-    <height>673</height>
+    <width>1078</width>
+    <height>691</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -146,7 +146,7 @@ border: 4px outset #10f0e9;
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>170</height>
+           <height>185</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -168,7 +168,7 @@ border: 4px outset #10f0e9;
            <number>5</number>
           </property>
           <property name="bottomMargin">
-           <number>2</number>
+           <number>1</number>
           </property>
           <property name="horizontalSpacing">
            <number>9</number>
@@ -176,68 +176,6 @@ border: 4px outset #10f0e9;
           <property name="verticalSpacing">
            <number>3</number>
           </property>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="pushButtonSeg">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>27</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-  background-color:#4CAF50;
-  color: white; 
-  border: 1px solid gray;
-  border-radius: 7px;
-}
-
-QPushButton:pressed {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #49c44d, stop: 1 #6cd470);
-}</string>
-            </property>
-            <property name="text">
-             <string>Cегментировать</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QPushButton" name="pushButtonStart">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>27</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-  background-color:#4CAF50;
-  color: white; 
-  border: 1px solid gray;
-  border-radius: 7px;
-}
-
-QPushButton:pressed {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #49c44d, stop: 1 #6cd470);
-}</string>
-            </property>
-            <property name="text">
-             <string>Выбрать фото</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QCheckBox" name="checkBoxSave">
-            <property name="styleSheet">
-             <string notr="true">background: rgba(204, 224, 232, 0.5)</string>
-            </property>
-            <property name="text">
-             <string>Сохранить все</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="1" rowspan="10">
            <widget class="QGroupBox" name="verticalGroupBox_2">
             <property name="mouseTracking">
@@ -461,7 +399,16 @@ outline: none;
                 <bool>false</bool>
                </property>
                <property name="minimum">
-                <number>25</number>
+                <number>30</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="pageStep">
+                <number>10</number>
+               </property>
+               <property name="sliderPosition">
+                <number>90</number>
                </property>
                <property name="tracking">
                 <bool>true</bool>
@@ -478,9 +425,88 @@ outline: none;
                <property name="tickPosition">
                 <enum>QSlider::TicksBelow</enum>
                </property>
+               <property name="tickInterval">
+                <number>0</number>
+               </property>
               </widget>
              </item>
             </layout>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="checkBoxSeg">
+            <property name="styleSheet">
+             <string notr="true">
+background: rgba(204, 224, 232, 0.5)
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Сегментировать все</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QCheckBox" name="checkBoxSave">
+            <property name="styleSheet">
+             <string notr="true">background: rgba(204, 224, 232, 0.5)</string>
+            </property>
+            <property name="text">
+             <string>Сохранить все</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="pushButtonStart">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+  background-color:#4CAF50;
+  color: white; 
+  border: 1px solid gray;
+  border-radius: 7px;
+}
+
+QPushButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #49c44d, stop: 1 #6cd470);
+}</string>
+            </property>
+            <property name="text">
+             <string>Выбрать фото</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="pushButtonSeg">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+  background-color:#4CAF50;
+  color: white; 
+  border: 1px solid gray;
+  border-radius: 7px;
+}
+
+QPushButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #49c44d, stop: 1 #6cd470);
+}</string>
+            </property>
+            <property name="text">
+             <string>Cегментировать</string>
+            </property>
            </widget>
           </item>
           <item row="2" column="0">
@@ -509,17 +535,25 @@ QPushButton:pressed {
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="checkBoxSeg">
-            <property name="styleSheet">
-             <string notr="true">
-background: rgba(204, 224, 232, 0.5)
-
-
-</string>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>10</height>
+             </size>
             </property>
             <property name="text">
-             <string>Сегментировать все</string>
+             <string>0.9</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>

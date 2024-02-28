@@ -125,7 +125,7 @@ class ChromosomeCellDetector:
                         center_of_mass = ndimage.center_of_mass(mask, labeled_mask, label)
                         cell.add_center_of_mass(center_of_mass)
 
-                        distances = np.sqrt(np.sum((np.argwhere(labeled_mask == label) 
+                        distances = np.sqrt(np.sum((np.argwhere(labeled_mask == label)
                                                     - np.array(center_of_mass))**2, axis=1))
                         # Находим максимальное расстояние, которое и будет радиусом вокруг центра масс
                         self.Radius.append(np.max(distances))
@@ -166,7 +166,6 @@ class ChromosomeCellDetector:
             for idx, cell in enumerate(self.cells):
                 for center_of_mass in cell.center_of_mass:
                     row_data = [
-                        folder_path,
                         file_name,
                         idx + 1,
                         center_of_mass[1],
