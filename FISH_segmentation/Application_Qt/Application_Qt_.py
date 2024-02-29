@@ -2,17 +2,17 @@ import os
 import czifile
 import numpy as np
 import matplotlib.image as mpimg
+import cv2
 from PIL import Image
 from matplotlib import pyplot as plt
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem
+from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem, QMessageBox
 from ultralytics import YOLO
 from Application_Qt_module_ui import Ui_MainWindow
 from ChromosomePatch import ChromosomeCellDetector
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-import cv2
 
 
 class Func(Ui_MainWindow):
@@ -57,29 +57,36 @@ class Func(Ui_MainWindow):
             selected_items = self.SelectionTable.selectedItems()
             if len(selected_items) > 0:
                 row = selected_items[0].row()
+            try:
+                detector = self.DetectorsList[self.SelectionListIndexProm]
+                radius = detector.Radius[row]
 
-            detector = self.DetectorsList[self.SelectionListIndexProm]
-            radius = detector.Radius[row]
+                item = self.SelectionTable.item(row, 1)
+                if item is not None:
+                    x = item.text()
+                item = self.SelectionTable.item(row, 2)
+                if item is not None:
+                    y = item.text()
+                image = self.PhotoSegmentationList[self.SelectionListIndexProm]
+                desired_size = (512, 512)
+                image = cv2.resize(image, desired_size)
 
-            item = self.SelectionTable.item(row, 1)
-            if item is not None:
-                x = item.text()
-            item = self.SelectionTable.item(row, 2)
-            if item is not None:
-                y = item.text()
+                # Нарисовать круг вокруг выбранных координат
+                cv2.circle(image, (int(float(x)), int(float(y))), int(float(radius)), (231, 242, 12), 2)
 
-            image = self.PhotoSegmentationList[self.SelectionListIndexProm]
-            desired_size = (512, 512)
-            image = cv2.resize(image, desired_size)
+                # Отобразить изображение с кругом
+                qimage = QImage(image, int(512), int(512), QImage.Format.Format_RGB888)
+                pixmap = QPixmap.fromImage(qimage)
+                pixmap = pixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio)
+                self.PlaceForPromFotos.setPixmap(pixmap)
 
-            # Нарисовать круг вокруг выбранных координат
-            cv2.circle(image, (int(float(x)), int(float(y))), int(float(radius)), (231, 242, 12), 2)
+            except UnboundLocalError as e:
+                error_dialog = QMessageBox()
+                error_dialog.setWindowTitle("Ошибка")
+                error_dialog.setText(f"Произошла ошибка: {str(e)}. Попробуйте перевыбрать элемент в таблице.")
+                error_dialog.exec()
 
-            # Отобразить изображение с кругом
-            qimage = QImage(image, int(512), int(512), QImage.Format.Format_RGB888)
-            pixmap = QPixmap.fromImage(qimage)
-            pixmap = pixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio)
-            self.PlaceForPromFotos.setPixmap(pixmap)
+                print("Ошибка таблицы.")
 
     # Функция для сегментации:
     def predict_image_ChromosomePatch(self):
@@ -96,51 +103,58 @@ class Func(Ui_MainWindow):
         else:
             Index = self.SelectionListIndex + 1
             Zero = self.SelectionListIndex
+        try:
+            for file in range(Zero, Index):
+                detectorTest = ChromosomeCellDetector(self.PhotoList[file])
+                detector = ChromosomeCellDetector(self.PhotoList[file])
+                number_explode, number_whole = detector.find_cells(Accuracy)
+                detector.detect_chromosomes()
+                Red_Chromosome = detector.RedChromosome
+                Green_Chromosome = detector.GreenChromosome
 
-        for file in range(Zero, Index):
-            detectorTest = ChromosomeCellDetector(self.PhotoList[file])
-            detector = ChromosomeCellDetector(self.PhotoList[file])
-            number_explode, number_whole = detector.find_cells(Accuracy)
-            detector.detect_chromosomes()
-            Red_Chromosome = detector.RedChromosome
-            Green_Chromosome = detector.GreenChromosome
+                fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)
+                ax = detector.plot(ax)
+                fig.patch.set_visible(False)
+                ax.axis("off")
+                plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
-            fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)
-            ax = detector.plot(ax)
-            fig.patch.set_visible(False)
-            ax.axis("off")
-            plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+                canvas = FigureCanvas(fig)
+                canvas.draw()
+                self.width, self.height = fig.get_size_inches() * fig.get_dpi()
+                buffer_rgba = canvas.buffer_rgba()
+                array_rgba = np.asarray(buffer_rgba)
+                imgrgd = detectorTest.rgba2rgb(array_rgba)
 
-            canvas = FigureCanvas(fig)
-            canvas.draw()
-            self.width, self.height = fig.get_size_inches() * fig.get_dpi()
-            buffer_rgba = canvas.buffer_rgba()
-            array_rgba = np.asarray(buffer_rgba)
-            imgrgd = detectorTest.rgba2rgb(array_rgba)
+                self.PhotoSegmentationList.append(imgrgd)
+                self.DetectorsList.append(detector)
+                self.PhotoSegmentationNameList.append(file)
 
-            self.PhotoSegmentationList.append(imgrgd)
-            self.DetectorsList.append(detector)
-            self.PhotoSegmentationNameList.append(file)
+                ref = (
+                    "Whole cell: "
+                    + str(number_whole)
+                    + "\nExplode cell: "
+                    + str(number_explode)
+                    + "\nRed chromosome: "
+                    + str(Red_Chromosome)
+                    + "\nGreen chromosome: "
+                    + str(Green_Chromosome)
+                )
+                self.Ref.append(ref)
+                detector.write_to_csv("Списочек", "рядом", self.PhotoNameList[file])
 
-            ref = (
-                "Whole cell: "
-                + str(number_whole)
-                + "\nExplode cell: "
-                + str(number_explode)
-                + "\nRed chromosome: "
-                + str(Red_Chromosome)
-                + "\nGreen chromosome: "
-                + str(Green_Chromosome)
-            )
-            self.Ref.append(ref)
-            detector.write_to_csv("Списочек", "рядом", self.PhotoNameList[file])
+            qimage = QImage(imgrgd, int(self.width), int(self.height), QImage.Format.Format_RGB888)
+            pixmap = QPixmap.fromImage(qimage)
+            pixmap = pixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio)
+            self.PlaceForPromFotos.setPixmap(pixmap)
+            self.DataLabel.setText(ref)
+            self.SelectionListFunc()
+        except IndexError as e:
+            error_dialog = QMessageBox()
+            error_dialog.setWindowTitle("Ошибка")
+            error_dialog.setText(f"Произошла ошибка: {str(e)}. Попробуйте увеличить точность.")
+            error_dialog.exec()
 
-        qimage = QImage(imgrgd, int(self.width), int(self.height), QImage.Format.Format_RGB888)
-        pixmap = QPixmap.fromImage(qimage)
-        pixmap = pixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio)
-        self.PlaceForPromFotos.setPixmap(pixmap)
-        self.DataLabel.setText(ref)
-        self.SelectionListFunc()
+            print("Ошибка. Попробуйте увеличить точность.")
 
     # фун-я, читающая картинки:
     def PhotoReadAndSave(self, FilePaths):

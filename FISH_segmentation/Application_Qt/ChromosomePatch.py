@@ -6,11 +6,10 @@ import imutils
 import numpy as np
 import scipy
 import skimage
+import logging
 from matplotlib import pyplot as plt
 from ultralytics import YOLO
 from scipy import ndimage
-import logging
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
