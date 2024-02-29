@@ -80,7 +80,7 @@ class Func(Ui_MainWindow):
                 pixmap = pixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio)
                 self.PlaceForPromFotos.setPixmap(pixmap)
 
-            except UnboundLocalError as e:
+            except (UnboundLocalError, IndexError) as e:
                 error_dialog = QMessageBox()
                 error_dialog.setWindowTitle("Ошибка")
                 error_dialog.setText(f"Произошла ошибка: {str(e)}. Попробуйте перевыбрать элемент в таблице.")
@@ -179,6 +179,8 @@ class Func(Ui_MainWindow):
                 if FilePaths[file].endswith(".czi"):
                     image = self.read_czi_image(FilePaths[file])
 
+                if np.all(image == 0):
+                    break
                 image = cv2.resize(image, (512, 512))
                 detectorTest = ChromosomeCellDetector(image)
                 image = detectorTest.rgba2rgb(image)
@@ -188,17 +190,25 @@ class Func(Ui_MainWindow):
                 self.SelectionList.addItem(Image_name)
 
     def read_czi_image(self, filename, norm=True):
-        with czifile.CziFile(filename) as czi:
-            image = czi.asarray().squeeze()
-            image = np.stack([image[1], image[2], image[0]], axis=-1)  # swap channels to order -> RGB
+        try:
+            with czifile.CziFile(filename) as czi:
+                image = czi.asarray().squeeze()
+                image = np.stack([image[1], image[2], image[0]], axis=-1)  # swap channels to order -> RGB
 
-            if norm:
-                info = np.iinfo(image.dtype)
-                image = image.astype(np.float64) / info.max  # normalize the data to 0-1
-                image = (255 * image).astype(np.uint8)  # normalize the data to 0-255
+                if norm:
+                    info = np.iinfo(image.dtype)
+                    image = image.astype(np.float64) / info.max  # normalize the data to 0-1
+                    image = (255 * image).astype(np.uint8)  # normalize the data to 0-255
 
-                image = np.ascontiguousarray(image)
-            return image
+                    image = np.ascontiguousarray(image)
+                return image
+        except IndexError as e:
+            error_dialog = QMessageBox()
+            error_dialog.setWindowTitle("Ошибка")
+            error_dialog.setText(f"Произошла ошибка: {str(e)}. Проблема с обработкой .czi формата.")
+            error_dialog.exec()
+            print("Ошибка. Проблема с обработкой .czi формата.")
+            return np.zeros((3, 3))
 
     # Получение массива путей к изображениям:
     def Add_Paths(self):
