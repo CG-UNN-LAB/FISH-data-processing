@@ -1,13 +1,18 @@
 import enum
 import os
-
+import csv
 import cv2
 import imutils
 import numpy as np
 import scipy
 import skimage
+import logging
 from matplotlib import pyplot as plt
 from ultralytics import YOLO
+from scipy import ndimage
+from PyQt6.QtWidgets import QMessageBox
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Cell:
@@ -22,6 +27,11 @@ class Cell:
 
         self.red_chromosomes = []
         self.green_chromosomes = []
+        self.center_of_mass = []
+        self.Type = -1
+
+    def add_center_of_mass(self, center_of_mass):
+        self.center_of_mass.append(center_of_mass)
 
     def add_red_chromosome(self, red_chromosome):
         self.red_chromosomes.append(red_chromosome)
@@ -33,17 +43,19 @@ class Cell:
 class ChromosomeCellDetector:
     RedChromosome = 0
     GreenChromosome = 0
+    NumberExplode = 0
+    NumberWhole = 0
     MODEL_PATH = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "..\\Model\\my_yolov8_model_core_segmentation.pt")
+        os.path.dirname(os.path.abspath(__file__)), "..\\Model\\my_yolov8_model_core_segmentation_plus_plus.pt")
     CELLS_DETECTOR = YOLO(MODEL_PATH)
 
     def __init__(self, image: np.ndarray):
         self.image: np.ndarray = image
         self.cells: list[Cell] = []
+        self.Radius = []
 
     def plot(self, ax=None):
         ax.imshow(self.image)
-
         for cell in self.cells:
             mask = np.invert(cell.masked_area.mask[..., 0]).astype(np.uint8)
             contour_color = 'green' if cell.cell_type == Cell.CellType.WHOLE else 'red'
@@ -81,44 +93,100 @@ class ChromosomeCellDetector:
             classes=[0, 1],
             conf=confidence,
         )
+        self.Radius.clear()
+        try:
+            for prediction in predictions:
+                masks = prediction.masks.data.numpy().transpose(1, 2, 0)
+                classes = prediction.boxes.cls.data.numpy()
 
-        for prediction in predictions:
-            masks = prediction.masks.data.numpy().transpose(1, 2, 0)
-            classes = prediction.boxes.cls.data.numpy()
+                for mask, cls in zip(np.rollaxis(masks, 2), classes):
+                    mask = cv2.resize(mask, dsize=self.image.shape[:2], interpolation=cv2.INTER_LINEAR)
+                    mask3d = (np.repeat(mask[..., np.newaxis], 3, axis=-1) > 0).astype(bool)
 
-            for mask, cls in zip(np.rollaxis(masks, 2), classes):
-                mask = cv2.resize(mask, dsize=self.image.shape[:2], interpolation=cv2.INTER_LINEAR)
-                mask3d = (np.repeat(mask[..., np.newaxis], 3, axis=-1) > 0).astype(bool)
+                    # TODO: opencv and skimage give slightly different resized mask
+                    # mask = skimage.transform.resize(
+                    #     mask.astype(bool),
+                    #     output_shape=self.image.shape[:2],
+                    #     order=0,
+                    #     preserve_range=True,
+                    #     anti_aliasing=False
+                    # )
+                    # mask3d = np.repeat(mask[..., np.newaxis], 3, axis=-1)
 
-                # TODO: opencv and skimage give slightly different resized mask
-                # mask = skimage.transform.resize(
-                #     mask.astype(bool),
-                #     output_shape=self.image.shape[:2],
-                #     order=0,
-                #     preserve_range=True,
-                #     anti_aliasing=False
-                # )
-                # mask3d = np.repeat(mask[..., np.newaxis], 3, axis=-1)
+                    masked_image = np.ma.masked_where(np.invert(mask3d), self.image)
 
-                masked_image = np.ma.masked_where(np.invert(mask3d), self.image)
+                    cell = Cell(masked_image, Cell.CellType(int(cls)))
+                    self.cells.append(cell)
 
-                cell = Cell(masked_image, Cell.CellType(int(cls)))
-                self.cells.append(cell)
+                    # Найдем координаты центра масс каждой клетки
+                    if cell.cell_type == Cell.CellType.EXPLODED or cell.cell_type == Cell.CellType.WHOLE:
+                        labeled_mask, num_labels = ndimage.label(mask)
+                        for label in range(1, num_labels + 1):
+                            np.argwhere(labeled_mask == label)
+                            center_of_mass = ndimage.center_of_mass(mask, labeled_mask, label)
+                            cell.add_center_of_mass(center_of_mass)
+
+                            distances = np.sqrt(np.sum((np.argwhere(labeled_mask == label)
+                                                        - np.array(center_of_mass))**2, axis=1))
+                            # Находим максимальное расстояние, которое и будет радиусом вокруг центра масс
+                            self.Radius.append(np.max(distances))
+        except AttributeError as e:
+            error_dialog = QMessageBox()
+            error_dialog.setWindowTitle("Ошибка")
+            error_dialog.setText(f"Произошла ошибка: {str(e)}. Программа не смогла проанализировать изображение.")
+            error_dialog.exec()
+
+            print("Ошибка.")
+
         # Доп.Информация:
         names = ChromosomeCellDetector.CELLS_DETECTOR.names
-        number_whole = 0
-        number_explode = 0
+        self.NumberWhole = 0
+        self.NumberExplode = 0
         for r in predictions:
             for c in r.boxes.cls:
                 if names[int(c)] == "Whole cell":
-                    number_whole += 1
+                    self.NumberWhole += 1
                 if names[int(c)] == "Explode cell":
-                    number_explode += 1
+                    self.NumberExplode += 1
         print("Explode:")
-        print(number_explode)
+        print(self.NumberExplode)
         print("Whole:")
-        print(number_whole)
-        return number_explode, number_whole
+        print(self.NumberWhole)
+        return self.NumberExplode, self.NumberWhole
+
+    def write_to_csv(self, output_file, folder_path, file_name):
+        file_exists = os.path.isfile(output_file)
+        with open(output_file, 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';')
+
+            # Если файл только что создан, добавляем заголовок
+            if not file_exists or csvfile.tell() == 0:
+                header = ["Folder Path", "File Name", "Cell Number", "Center X", "Center Y",
+                          "Green Chromosomes", "Red Chromosomes", "Cell Type"]
+                writer.writerow(header)
+
+            if not file_exists:
+                logger.info(f" Файл {output_file} был создан, заголовок добавлен.")
+            else:
+                logger.info(f" Файл {output_file} уже существует, данные будут записаны к уже существующим.")
+
+            # Далее ваш код записи данных в CSV, например:
+            for idx, cell in enumerate(self.cells):
+                for center_of_mass in cell.center_of_mass:
+                    row_data = [
+                        file_name,
+                        idx + 1,
+                        center_of_mass[1],
+                        center_of_mass[0],
+                        len(cell.green_chromosomes),
+                        len(cell.red_chromosomes),
+                        "Exploded" if cell.cell_type == Cell.CellType.EXPLODED else "Whole",
+                    ]
+                    if (cell.cell_type == Cell.CellType.EXPLODED):
+                        cell.Type = 0
+                    else:
+                        cell.Type = 1
+                    writer.writerow(row_data)
 
     def detect_chromosomes(self):
         unsharped_image = ChromosomeCellDetector.__unsharp_mask(self.image,
@@ -132,8 +200,8 @@ class ChromosomeCellDetector:
         green_chromosome_candidates = ChromosomeCellDetector.__get_chromosome_candidates(green_channel)
 
         closeness = 1.0
-        ChromosomeCellDetector.RedChromosome = 0
-        ChromosomeCellDetector.GreenChromosome = 0
+        self.RedChromosome = 0
+        self.GreenChromosome = 0
         self.__filter_chromosomes(
             red_chromosome_candidates,
             'red',
@@ -166,10 +234,10 @@ class ChromosomeCellDetector:
                     accepted[idx] = True
                     if chromosome_type == 'red':
                         cell.add_red_chromosome(candidate)
-                        ChromosomeCellDetector.RedChromosome += 1
+                        self.RedChromosome += 1
                     elif chromosome_type == 'green':
                         cell.add_green_chromosome(candidate)
-                        ChromosomeCellDetector.GreenChromosome += 1
+                        self.GreenChromosome += 1
                     break
 
     @staticmethod
