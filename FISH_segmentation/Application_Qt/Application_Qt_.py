@@ -46,11 +46,11 @@ class Func(Ui_MainWindow):
 
         self.deleteShortcut = QtGui.QShortcut(QtCore.Qt.Key.Key_Delete, self.SelectionList)
         self.deleteShortcut.activated.connect(self.ListFuncDelete)
-        self.horizontalSlider.valueChanged.connect(self.update_label)
+        self.AccuracySlider.valueChanged.connect(self.update_label)
 
     def update_label(self):
-        value = float(self.horizontalSlider.value() / 100)
-        self.label.setText(str(value))
+        value = float(self.AccuracySlider.value() / 100)
+        self.AccuracyLable.setText(str(value))
 
     def SelectionTableFunc(self):
         if self.SelectionListIndexProm != -1:
@@ -93,7 +93,7 @@ class Func(Ui_MainWindow):
         is_checked = self.checkBoxSeg.isChecked()
         if (self.SelectionListIndex == -1 and not is_checked) or len(self.PhotoList) == 0:
             return
-        Accuracy = float(self.horizontalSlider.value() / 100)  # Берем точность с поля;
+        Accuracy = float(self.AccuracySlider.value() / 100)  # Берем точность с поля;
         if (Accuracy >= 0.98):
             Accuracy = 0.95
 
