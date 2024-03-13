@@ -21,7 +21,6 @@ class Ui_MainWindow(object):
             QtGui.QIcon.State.Off,
         )
         MainWindow.setWindowIcon(icon)
-        MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet(
             "#MainWindow\n"
             "{\n"
@@ -36,10 +35,6 @@ class Ui_MainWindow(object):
             "\n"
             ""
         )
-        MainWindow.setAnimated(True)
-        MainWindow.setDocumentMode(False)
-        MainWindow.setDockNestingEnabled(False)
-        MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         self.CentralWidget = QtWidgets.QWidget(parent=MainWindow)
         self.CentralWidget.setStyleSheet(
             "#CentralWidget {background-color: transparent;}"
@@ -58,7 +53,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setSpacing(5)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.Sec2_ToolsWidget = QtWidgets.QWidget(parent=self.CentralGroupBox)
-        self.Sec2_ToolsWidget.setMaximumSize(QtCore.QSize(500, 16777215))
+        self.Sec2_ToolsWidget.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.Sec2_ToolsWidget.setStyleSheet("")
         self.Sec2_ToolsWidget.setObjectName("Sec2_ToolsWidget")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.Sec2_ToolsWidget)
@@ -204,7 +199,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.SelectionList = QtWidgets.QListWidget(parent=self.verticalGroupBox_2)
         self.SelectionList.setMinimumSize(QtCore.QSize(90, 0))
-        self.SelectionList.setMaximumSize(QtCore.QSize(90, 16777215))
+        self.SelectionList.setMaximumSize(QtCore.QSize(100, 16777215))
         self.SelectionList.setMouseTracking(False)
         self.SelectionList.setTabletTracking(False)
         self.SelectionList.setAcceptDrops(False)
@@ -227,7 +222,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
         self.SelectionListSeg = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
         self.SelectionListSeg.setMinimumSize(QtCore.QSize(90, 0))
-        self.SelectionListSeg.setMaximumSize(QtCore.QSize(90, 16777215))
+        self.SelectionListSeg.setMaximumSize(QtCore.QSize(100, 16777215))
         self.SelectionListSeg.setStyleSheet(
             "#SelectionListSeg\n"
             "{\n"
@@ -387,6 +382,7 @@ class Ui_MainWindow(object):
             "#PlaceForFotos\n" "{\n" "border: 4px inset #10f0ad;\n" "\n" "}"
         )
         self.PlaceForFotos.setFrameShape(QtWidgets.QFrame.Shape.Box)
+        self.PlaceForFotos.setScaledContents(True)
         self.PlaceForFotos.setObjectName("PlaceForFotos")
         self.verticalLayout_3.addWidget(self.PlaceForFotos)
         self.tabWidget.addTab(self.tab, "")
@@ -401,7 +397,7 @@ class Ui_MainWindow(object):
             "#PlaceForPromFotos\n" "{\n" "border: 4px outset #10f0e9;\n" "\n" "}"
         )
         self.PlaceForPromFotos.setFrameShape(QtWidgets.QFrame.Shape.Box)
-        self.PlaceForPromFotos.setScaledContents(False)
+        self.PlaceForPromFotos.setScaledContents(True)
         self.PlaceForPromFotos.setObjectName("PlaceForPromFotos")
         self.verticalLayout_2.addWidget(self.PlaceForPromFotos)
         self.tabWidget.addTab(self.tab_2, "")

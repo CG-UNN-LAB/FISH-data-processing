@@ -23,9 +23,6 @@
    <iconset resource="resources/resources.qrc">
     <normaloff>:/resources/icon.ico</normaloff>:/resources/icon.ico</iconset>
   </property>
-  <property name="autoFillBackground">
-   <bool>false</bool>
-  </property>
   <property name="styleSheet">
    <string notr="true">#MainWindow
 {
@@ -39,18 +36,6 @@ background-size: 100% 100%;
 
 
 </string>
-  </property>
-  <property name="animated">
-   <bool>true</bool>
-  </property>
-  <property name="documentMode">
-   <bool>false</bool>
-  </property>
-  <property name="dockNestingEnabled">
-   <bool>false</bool>
-  </property>
-  <property name="unifiedTitleAndToolBarOnMac">
-   <bool>false</bool>
   </property>
   <widget class="QWidget" name="CentralWidget">
    <property name="styleSheet">
@@ -87,7 +72,7 @@ border: 3px inset #94D9DC;
         <widget class="QWidget" name="Sec2_ToolsWidget" native="true">
          <property name="maximumSize">
           <size>
-           <width>500</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -386,7 +371,7 @@ border: 2px inset #1071f0;
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>90</width>
+                    <width>100</width>
                     <height>16777215</height>
                    </size>
                   </property>
@@ -440,7 +425,7 @@ background: rgba(204, 224, 232, 0.7);
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>90</width>
+                    <width>100</width>
                     <height>16777215</height>
                    </size>
                   </property>
@@ -788,6 +773,9 @@ border: 4px inset #10f0ad;
                 <property name="text">
                  <string>Исходное изображение, в формате .jpeg, png или .czi</string>
                 </property>
+                <property name="scaledContents">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
              </layout>
@@ -828,7 +816,7 @@ border: 4px outset #10f0e9;
                  <string>Результат сегментации</string>
                 </property>
                 <property name="scaledContents">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
