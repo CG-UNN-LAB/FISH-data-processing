@@ -27,8 +27,7 @@ class Func(Ui_MainWindow):
     # он же ref;
     ResultsDictionary = {}
     ModelDetectorsDictionary = {}
-
-    AXList = []
+    MaskDictionary = {}
 
     FileModelPath = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
@@ -51,6 +50,25 @@ class Func(Ui_MainWindow):
         self.deleteShortcut = QtGui.QShortcut(QtCore.Qt.Key.Key_Delete, self.SelectionList)
         self.deleteShortcut.activated.connect(self.ListFuncDelete)
         self.AccuracySlider.valueChanged.connect(self.update_label)
+
+        # Соединяем сигнал с слотом из переопределенног класса ClickableLabel;
+        self.PlaceForPromFotos.clicked.connect(self.ClickedPlaceForPromFotos)
+
+    def ClickedPlaceForPromFotos(self, original_x, original_y):
+        if self.SelectionListIndexProm == "":
+            return
+        index = 0
+        # Перебор найденных контуров:
+        masks = self.MaskDictionary[self.SelectionListIndexProm]
+        for mask in masks:
+            contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            for contour in contours:
+                # Проверяем, попал ли клик мыши в контур
+                if cv2.pointPolygonTest(contour, (original_x, original_y), False) >= 0:
+                    self.SelectionTable.setCurrentCell(index, 0)
+                    self.SelectionTableFunc()
+                    return
+                index += 1
 
     # Обновить значение точности в поле на интерфейсе;
     def update_label(self):
@@ -106,6 +124,7 @@ class Func(Ui_MainWindow):
                 self.predict_image_ChromosomePatch(Accuracy, ImageName)
         else:
             self.predict_image_ChromosomePatch(Accuracy, self.SelectionListIndex)
+        self.SelectionListFunc()
 
     # Функция для сегментации:
     def predict_image_ChromosomePatch(self, Accuracy, ImageName):
@@ -118,7 +137,7 @@ class Func(Ui_MainWindow):
             Green_Chromosome = detector.GreenChromosome
 
             fig, ax = plt.subplots(1, 1, figsize=(16, 16), dpi=300)
-            ax = detector.plot(ax)
+            ax, mask = detector.plot(ax)
             fig.patch.set_visible(False)
             ax.axis("off")
             plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
@@ -132,6 +151,7 @@ class Func(Ui_MainWindow):
 
             self.SegmentationImagesDictionary[ImageName] = imgrgd
             self.ModelDetectorsDictionary[ImageName] = detector
+            self.MaskDictionary[ImageName] = mask
 
             ref = (
                 "Whole cell: "
@@ -221,6 +241,9 @@ class Func(Ui_MainWindow):
 
     # Обработка взаимодействия со списком выбранных изображений "SelectionList":
     def SelectionListFunc(self):
+        if self.SelectionList.currentItem() is None:
+            item = self.SelectionList.item(self.SelectionList.count()-1)
+            self.SelectionList.setCurrentItem(item)
         self.SelectionListIndex = (self.SelectionList.currentItem()).text()
         SegTrueIndex = ""
         for name in self.SegmentationImagesDictionary:
@@ -272,12 +295,14 @@ class Func(Ui_MainWindow):
         self.SelectionList.takeItem(currentRow)
 
         self.ImagesDictionary.pop(CurrentName)
+        self.SelectionListIndex = ""
         if CurrentName in self.SegmentationImagesDictionary:
             self.SegmentationImagesDictionary.pop(CurrentName)
             self.ResultsDictionary.pop(CurrentName)
             self.ModelDetectorsDictionary.pop(CurrentName)
             self.SelectionTable.setRowCount(0)
             self.PlaceForPromFotos.clear()
+            self.SelectionListIndexProm = ""
         self.PlaceForFotos.clear()
 
     def SavePhoto(self):

@@ -53,6 +53,7 @@ class ChromosomeCellDetector:
         self.image: np.ndarray = image
         self.cells: list[Cell] = []
         self.Radius = []
+        self.MyMask = []
 
     def plot(self, ax=None):
         ax.imshow(self.image)
@@ -60,6 +61,7 @@ class ChromosomeCellDetector:
             mask = np.invert(cell.masked_area.mask[..., 0]).astype(np.uint8)
             contour_color = 'green' if cell.cell_type == Cell.CellType.WHOLE else 'red'
             ax.contour(mask, colors=contour_color, linewidths=0.5, alpha=0.5)
+            self.MyMask.append(mask)
 
             for p in cell.red_chromosomes:
                 circle = plt.Circle((p[1], p[0]), radius=3, color='red', fill=False, linestyle='--')
@@ -68,7 +70,7 @@ class ChromosomeCellDetector:
             for p in cell.green_chromosomes:
                 circle = plt.Circle((p[1], p[0]), radius=3, color='green', fill=False, linestyle='--')
                 ax.add_patch(circle)
-        return ax
+        return ax, self.MyMask
 
     def rgba2rgb(self, rgba, background=(255, 255, 255)):
         row, col, ch = rgba.shape

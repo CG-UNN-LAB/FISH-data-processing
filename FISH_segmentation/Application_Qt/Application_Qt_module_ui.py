@@ -7,6 +7,7 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from ClickableLabel import ClickableLabel
 
 
 class Ui_MainWindow(object):
@@ -392,7 +393,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.tab_2)
         self.verticalLayout_2.setContentsMargins(5, 5, 5, 5)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.PlaceForPromFotos = QtWidgets.QLabel(parent=self.tab_2)
+        self.PlaceForPromFotos = ClickableLabel(parent=self.tab_2)
         self.PlaceForPromFotos.setStyleSheet(
             "#PlaceForPromFotos\n" "{\n" "border: 4px outset #10f0e9;\n" "\n" "}"
         )

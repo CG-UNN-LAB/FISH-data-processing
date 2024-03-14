@@ -801,7 +801,7 @@ border: 4px inset #10f0ad;
                <number>5</number>
               </property>
               <item>
-               <widget class="QLabel" name="PlaceForPromFotos">
+               <widget class="ClickableLabel" name="PlaceForPromFotos">
                 <property name="styleSheet">
                  <string notr="true">#PlaceForPromFotos
 {
@@ -833,6 +833,13 @@ border: 4px outset #10f0e9;
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ClickableLabel</class>
+   <extends>QLabel</extends>
+   <header>ClickableLabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources/resources.qrc"/>
  </resources>
