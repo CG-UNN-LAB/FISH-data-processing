@@ -198,48 +198,6 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setContentsMargins(2, 2, 2, 2)
         self.gridLayout_3.setSpacing(2)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.SelectionList = QtWidgets.QListWidget(parent=self.verticalGroupBox_2)
-        self.SelectionList.setMinimumSize(QtCore.QSize(90, 0))
-        self.SelectionList.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.SelectionList.setMouseTracking(False)
-        self.SelectionList.setTabletTracking(False)
-        self.SelectionList.setAcceptDrops(False)
-        self.SelectionList.setAutoFillBackground(False)
-        self.SelectionList.setStyleSheet(
-            "#SelectionList\n"
-            "{\n"
-            "border: 2px solid #7C8081;\n"
-            "background: rgba(204, 224, 232, 0.7);\n"
-            "}"
-        )
-        self.SelectionList.setWordWrap(False)
-        self.SelectionList.setObjectName("SelectionList")
-        self.gridLayout_3.addWidget(self.SelectionList, 1, 0, 1, 1)
-        self.label = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
-        self.label.setStyleSheet(
-            "#label{\n" " color: white;\n" " background: #717270;\n" " }"
-        )
-        self.label.setObjectName("label")
-        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
-        self.SelectionListSeg = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
-        self.SelectionListSeg.setMinimumSize(QtCore.QSize(90, 0))
-        self.SelectionListSeg.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.SelectionListSeg.setStyleSheet(
-            "#SelectionListSeg\n"
-            "{\n"
-            "border: 2px solid #7C8081;\n"
-            "background: rgba(204, 224, 232, 0.7);\n"
-            "}"
-        )
-        self.SelectionListSeg.setText("")
-        self.SelectionListSeg.setObjectName("SelectionListSeg")
-        self.gridLayout_3.addWidget(self.SelectionListSeg, 1, 1, 1, 1)
-        self.label_2 = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
-        self.label_2.setStyleSheet(
-            "#label_2{\n" " color: white;\n" " background: #717270;\n" " }"
-        )
-        self.label_2.setObjectName("label_2")
-        self.gridLayout_3.addWidget(self.label_2, 0, 1, 1, 1)
         self.InfTools_ = QtWidgets.QFrame(parent=self.verticalGroupBox_2)
         self.InfTools_.setStyleSheet(
             "#InfTools_\n" "{\n" "border: 0px solid #7C8081;\n" "}"
@@ -280,7 +238,48 @@ class Ui_MainWindow(object):
         self.DataLabel_2.setText("")
         self.DataLabel_2.setObjectName("DataLabel_2")
         self.InfTools.addWidget(self.DataLabel_2)
-        self.gridLayout_3.addWidget(self.InfTools_, 0, 2, 2, 1)
+        self.gridLayout_3.addWidget(self.InfTools_, 0, 2, 3, 1)
+        self.SelectionList = QtWidgets.QListWidget(parent=self.verticalGroupBox_2)
+        self.SelectionList.setMinimumSize(QtCore.QSize(90, 0))
+        self.SelectionList.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.SelectionList.setMouseTracking(False)
+        self.SelectionList.setTabletTracking(False)
+        self.SelectionList.setAcceptDrops(False)
+        self.SelectionList.setAutoFillBackground(False)
+        self.SelectionList.setStyleSheet(
+            "#SelectionList\n"
+            "{\n"
+            "border: 2px solid #7C8081;\n"
+            "background: rgba(204, 224, 232, 0.7);\n"
+            "}"
+        )
+        self.SelectionList.setWordWrap(False)
+        self.SelectionList.setObjectName("SelectionList")
+        self.gridLayout_3.addWidget(self.SelectionList, 2, 0, 1, 1)
+        self.label_2 = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
+        self.label_2.setStyleSheet(
+            "#label_2{\n" " color: white;\n" " background: #717270;\n" " }"
+        )
+        self.label_2.setObjectName("label_2")
+        self.gridLayout_3.addWidget(self.label_2, 0, 1, 1, 1)
+        self.label = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
+        self.label.setStyleSheet(
+            "#label{\n" " color: white;\n" " background: #717270;\n" " }"
+        )
+        self.label.setObjectName("label")
+        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
+        self.SelectionListSeg = QtWidgets.QListWidget(parent=self.verticalGroupBox_2)
+        self.SelectionListSeg.setMinimumSize(QtCore.QSize(90, 0))
+        self.SelectionListSeg.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.SelectionListSeg.setStyleSheet(
+            "#SelectionListSeg\n"
+            "{\n"
+            "border: 2px solid #7C8081;\n"
+            "background: rgba(204, 224, 232, 0.7);\n"
+            "}"
+        )
+        self.SelectionListSeg.setObjectName("SelectionListSeg")
+        self.gridLayout_3.addWidget(self.SelectionListSeg, 1, 1, 2, 1)
         self.gridLayout.addWidget(self.verticalGroupBox_2, 0, 1, 10, 1)
         self.AccuracyWidget = QtWidgets.QWidget(parent=self.ToolsBox)
         self.AccuracyWidget.setMinimumSize(QtCore.QSize(0, 0))
@@ -408,7 +407,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.CentralWidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -432,8 +431,8 @@ class Ui_MainWindow(object):
         self.checkBoxSeg.setText(_translate("MainWindow", "Сегментировать все"))
         self.pushButtonSave.setText(_translate("MainWindow", "Сохранить"))
         self.SelectionList.setSortingEnabled(False)
-        self.label.setText(_translate("MainWindow", "Изображения:"))
         self.label_2.setText(_translate("MainWindow", "Результат:"))
+        self.label.setText(_translate("MainWindow", "Изображения:"))
         self.AccuracyText.setText(_translate("MainWindow", "Порог точности:  "))
         self.AccuracyLable.setText(_translate("MainWindow", "0.9"))
         self.PlaceForFotos.setText(

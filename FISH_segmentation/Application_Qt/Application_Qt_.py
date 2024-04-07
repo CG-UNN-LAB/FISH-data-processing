@@ -228,7 +228,10 @@ class Func(Ui_MainWindow):
         except IndexError as e:
             error_dialog = QMessageBox()
             error_dialog.setWindowTitle("Ошибка")
-            error_dialog.setText(f"Произошла ошибка: {str(e)}. Проблема с обработкой .czi формата.")
+            error_dialog.setText(f"""
+                                 Произошла ошибка: {str(e)}. Проблема с обработкой .czi формата, возможно, ошибка с
+                                 количеством каналов.
+                                 """)
             error_dialog.exec()
             print("Ошибка. Проблема с обработкой .czi формата.")
             return np.zeros((3, 3))
@@ -295,7 +298,12 @@ class Func(Ui_MainWindow):
         self.SelectionList.takeItem(currentRow)
 
         self.ImagesDictionary.pop(CurrentName)
-        self.SelectionListIndex = ""
+
+        if len(self.ImagesDictionary) == 0:
+            self.SelectionListIndex = ""
+        else:
+            self.SelectionListFunc()
+
         if CurrentName in self.SegmentationImagesDictionary:
             self.SegmentationImagesDictionary.pop(CurrentName)
             self.ResultsDictionary.pop(CurrentName)
@@ -303,7 +311,6 @@ class Func(Ui_MainWindow):
             self.SelectionTable.setRowCount(0)
             self.PlaceForPromFotos.clear()
             self.SelectionListIndexProm = ""
-        self.PlaceForFotos.clear()
 
     def SavePhoto(self):
         is_checked = self.checkBoxSave.isChecked()
