@@ -255,14 +255,16 @@ class Ui_MainWindow(object):
         )
         self.SelectionList.setWordWrap(False)
         self.SelectionList.setObjectName("SelectionList")
-        self.gridLayout_3.addWidget(self.SelectionList, 2, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.SelectionList, 1, 0, 2, 1)
         self.label_2 = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
+        self.label_2.setMaximumSize(QtCore.QSize(16777215, 16))
         self.label_2.setStyleSheet(
             "#label_2{\n" " color: white;\n" " background: #717270;\n" " }"
         )
         self.label_2.setObjectName("label_2")
         self.gridLayout_3.addWidget(self.label_2, 0, 1, 1, 1)
         self.label = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
+        self.label.setMaximumSize(QtCore.QSize(16777215, 16))
         self.label.setStyleSheet(
             "#label{\n" " color: white;\n" " background: #717270;\n" " }"
         )
@@ -407,7 +409,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.CentralWidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

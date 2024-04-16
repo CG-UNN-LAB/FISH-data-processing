@@ -24,7 +24,6 @@ class Func(Ui_MainWindow):
     ImagesDictionary = {}
     SegmentationImagesDictionary = {}
 
-    # он же ref;
     ResultsDictionary = {}
     ModelDetectorsDictionary = {}
     MaskDictionary = {}
@@ -44,7 +43,9 @@ class Func(Ui_MainWindow):
         self.pushButtonStart.clicked.connect(self.Add_Paths)
         self.pushButtonSeg.clicked.connect(self.ClickPushButtonSeg)
         self.pushButtonSave.clicked.connect(self.SavePhoto)
+
         self.SelectionList.clicked.connect(self.SelectionListFunc)
+        self.SelectionListSeg.clicked.connect(self.SelectionListSegFunc)
         self.SelectionTable.clicked.connect(self.SelectionTableFunc)
 
         self.deleteShortcut = QtGui.QShortcut(QtCore.Qt.Key.Key_Delete, self.SelectionList)
@@ -114,7 +115,8 @@ class Func(Ui_MainWindow):
 
     def ClickPushButtonSeg(self):
         is_checked = self.checkBoxSeg.isChecked()
-        if (self.SelectionListIndex == "" and not is_checked) or len(self.ImagesDictionary) == 0:
+        if ((self.SelectionListIndex == "" and self.SelectionListIndexProm == "") and not is_checked) or \
+                len(self.ImagesDictionary) == 0:
             return
         Accuracy = float(self.AccuracySlider.value() / 100)  # Берем точность с поля;
         if (Accuracy >= 0.98):
@@ -123,8 +125,11 @@ class Func(Ui_MainWindow):
             for ImageName in self.ImagesDictionary:
                 self.predict_image_ChromosomePatch(Accuracy, ImageName)
         else:
-            self.predict_image_ChromosomePatch(Accuracy, self.SelectionListIndex)
-        self.SelectionListFunc()
+            if self.SelectionListIndex == "":
+                self.predict_image_ChromosomePatch(Accuracy, self.SelectionListIndexProm)
+            else:
+                self.predict_image_ChromosomePatch(Accuracy, self.SelectionListIndex)
+        self.SelectionListSegFunc()
 
     # Функция для сегментации:
     def predict_image_ChromosomePatch(self, Accuracy, ImageName):
@@ -149,10 +154,6 @@ class Func(Ui_MainWindow):
             array_rgba = np.asarray(buffer_rgba)
             imgrgd = detectorTest.rgba2rgb(array_rgba)
 
-            self.SegmentationImagesDictionary[ImageName] = imgrgd
-            self.ModelDetectorsDictionary[ImageName] = detector
-            self.MaskDictionary[ImageName] = mask
-
             ref = (
                 "Whole cell: "
                 + str(number_whole)
@@ -172,6 +173,19 @@ class Func(Ui_MainWindow):
 
             self.PlaceForPromFotos.setPixmap(pixmap)
             self.DataLabel.setText(ref)
+
+            FindImageInList = self.SelectionList.findItems(ImageName, QtCore.Qt.MatchFlag.MatchExactly)
+            # Если элемент найден, удалите его
+            if FindImageInList:
+                self.SelectionList.takeItem(self.SelectionList.row(FindImageInList[0]))
+
+            if ImageName not in self.SegmentationImagesDictionary:
+                self.SelectionListSeg.addItem(ImageName)
+
+            self.SegmentationImagesDictionary[ImageName] = imgrgd
+            self.ModelDetectorsDictionary[ImageName] = detector
+            self.MaskDictionary[ImageName] = mask
+
         except IndexError as e:
             error_dialog = QMessageBox()
             error_dialog.setWindowTitle("Ошибка")
@@ -189,8 +203,13 @@ class Func(Ui_MainWindow):
 
         for file in range(0, len(FilePaths)):
             ImageName = os.path.splitext(os.path.basename(FilePaths[file]))[0]  # Для получения имени файла
-            FindImageInList = self.SelectionList.findItems(ImageName, QtCore.Qt.MatchFlag.MatchExactly)
-            if not FindImageInList:
+
+            FindImageInList = 0
+            if ImageName in self.ImagesDictionary:
+                FindImageInList = 1
+            if ImageName in self.SegmentationImagesDictionary:
+                FindImageInList = 1
+            if FindImageInList == 0:
                 if FilePaths[file].endswith(".jpg"):
                     image = mpimg.imread(FilePaths[file])
                     image = np.ascontiguousarray(image)
@@ -242,17 +261,18 @@ class Func(Ui_MainWindow):
         if FilePaths:
             self.PhotoReadAndSave(FilePaths)
 
-    # Обработка взаимодействия со списком выбранных изображений "SelectionList":
+    # Обработка взаимодействия со списком выбранных изображений "SelectionList":    
     def SelectionListFunc(self):
+        if self.SelectionList.count() == 0:
+            self.SelectionListIndex = ""
+            return
+
+        self.SelectionListIndexProm = ""
         if self.SelectionList.currentItem() is None:
             item = self.SelectionList.item(self.SelectionList.count()-1)
             self.SelectionList.setCurrentItem(item)
         self.SelectionListIndex = (self.SelectionList.currentItem()).text()
-        SegTrueIndex = ""
-        for name in self.SegmentationImagesDictionary:
-            if name == self.SelectionListIndex:
-                SegTrueIndex = name
-
+       
         myImage = Image.fromarray(self.ImagesDictionary[self.SelectionListIndex])
         # Преобразование PIL Image в QImage
         MyQImage = QImage(myImage.tobytes(), myImage.size[0], myImage.size[1], QImage.Format.Format_RGB888)
@@ -260,57 +280,79 @@ class Func(Ui_MainWindow):
         MyQPixmap = QPixmap.fromImage(MyQImage)
         self.PlaceForFotos.setPixmap(MyQPixmap)
 
-        if SegTrueIndex != "":
-            myQImageSeg = QImage(self.SegmentationImagesDictionary[SegTrueIndex], int(self.width), int(self.height),
-                                 QImage.Format.Format_RGB888)
-            MyQPixmapSeg = QPixmap.fromImage(myQImageSeg)
-            MyQPixmapSeg = MyQPixmapSeg.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio)
-            self.PlaceForPromFotos.setPixmap(MyQPixmapSeg)
+        self.PlaceForPromFotos.clear()
+        self.DataLabel.clear()
+        self.SelectionTable.setRowCount(0)
 
-            self.DataLabel.setText(self.ResultsDictionary[SegTrueIndex])
-        else:
-            self.PlaceForPromFotos.clear()
-            self.DataLabel.clear()
-            self.SelectionTable.setRowCount(0)
+    # Обработка взаимодействия со списком выбранных изображений "SelectionListSeg":
+    def SelectionListSegFunc(self):
+        if self.SelectionListSeg.count() == 0:
+            self.SelectionListIndexProm = ""
+            return
+
+        self.SelectionListIndex = ""
+        if self.SelectionListSeg.currentItem() is None:
+            item = self.SelectionListSeg.item(self.SelectionListSeg.count()-1)
+            self.SelectionListSeg.setCurrentItem(item)
+        self.SelectionListIndexProm = (self.SelectionListSeg.currentItem()).text()
+
+        myImage = Image.fromarray(self.ImagesDictionary[self.SelectionListIndexProm])
+        # Преобразование PIL Image в QImage
+        MyQImage = QImage(myImage.tobytes(), myImage.size[0], myImage.size[1], QImage.Format.Format_RGB888)
+        # Преобразование QImage в QPixmap
+        MyQPixmap = QPixmap.fromImage(MyQImage)
+        self.PlaceForFotos.setPixmap(MyQPixmap)
+
+        myQImageSeg = QImage(self.SegmentationImagesDictionary[self.SelectionListIndexProm],
+                             int(self.width), int(self.height), QImage.Format.Format_RGB888)
+        MyQPixmapSeg = QPixmap.fromImage(myQImageSeg)
+        MyQPixmapSeg = MyQPixmapSeg.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio)
+        self.PlaceForPromFotos.setPixmap(MyQPixmapSeg)
+
+        self.DataLabel.setText(self.ResultsDictionary[self.SelectionListIndexProm])
 
         # Работа с таблицей:
-        self.SelectionListIndexProm = SegTrueIndex
-        if SegTrueIndex != "":
-            self.SelectionTable.clearContents()
-            detector = self.ModelDetectorsDictionary[SegTrueIndex]
-            self.SelectionTable.setRowCount(detector.NumberWhole + detector.NumberExplode)
-            index = 0
-            for idx, cell in enumerate(detector.cells):
-                for center_of_mass in cell.center_of_mass:
-                    self.SelectionTable.setItem(index, 0, QTableWidgetItem(str(idx + 1)))
-                    self.SelectionTable.setItem(index, 1, QTableWidgetItem(str(center_of_mass[1])))
-                    self.SelectionTable.setItem(index, 2, QTableWidgetItem(str(center_of_mass[0])))
-                    self.SelectionTable.setItem(index, 3, QTableWidgetItem(str(len(cell.green_chromosomes))))
-                    self.SelectionTable.setItem(index, 4, QTableWidgetItem(str(len(cell.red_chromosomes))))
-                    self.SelectionTable.setItem(index, 5, QTableWidgetItem("Exploded" if cell.Type == 0 else "Whole"))
-                    index += 1
-
+        self.SelectionTable.clearContents()
+        detector = self.ModelDetectorsDictionary[self.SelectionListIndexProm]
+        self.SelectionTable.setRowCount(detector.NumberWhole + detector.NumberExplode)
+        index = 0
+        for idx, cell in enumerate(detector.cells):
+            for center_of_mass in cell.center_of_mass:
+                self.SelectionTable.setItem(index, 0, QTableWidgetItem(str(idx + 1)))
+                self.SelectionTable.setItem(index, 1, QTableWidgetItem(str(center_of_mass[1])))
+                self.SelectionTable.setItem(index, 2, QTableWidgetItem(str(center_of_mass[0])))
+                self.SelectionTable.setItem(index, 3, QTableWidgetItem(str(len(cell.green_chromosomes))))
+                self.SelectionTable.setItem(index, 4, QTableWidgetItem(str(len(cell.red_chromosomes))))
+                self.SelectionTable.setItem(index, 5, QTableWidgetItem("Exploded" if cell.Type == 0 else "Whole"))
+                index += 1
+        
     def ListFuncDelete(self):
-        if self.SelectionList.count() == 0:
+        if self.SelectionList.count() == 0 and self.SelectionListSeg.count() == 0:
             return
-        currentRow = self.SelectionList.currentRow()
-        CurrentName = (self.SelectionList.currentItem()).text()
-        self.SelectionList.takeItem(currentRow)
+        Index = 0
+        if self.SelectionListIndexProm == "":
+            currentRow = self.SelectionList.currentRow()
+            CurrentName = (self.SelectionList.currentItem()).text()
+            self.SelectionList.takeItem(currentRow)
+
+            self.PlaceForFotos.clear()
+            self.SelectionListFunc()
+        else:
+            currentRow = self.SelectionListSeg.currentRow()
+            CurrentName = (self.SelectionListSeg.currentItem()).text()
+            self.SelectionListSeg.takeItem(currentRow)
+            Index = 1
+
+            self.SelectionTable.setRowCount(0)
+            self.PlaceForFotos.clear()
+            self.PlaceForPromFotos.clear()
+            self.SelectionListSegFunc()
 
         self.ImagesDictionary.pop(CurrentName)
-
-        if len(self.ImagesDictionary) == 0:
-            self.SelectionListIndex = ""
-        else:
-            self.SelectionListFunc()
-
-        if CurrentName in self.SegmentationImagesDictionary:
+        if Index == 1:
             self.SegmentationImagesDictionary.pop(CurrentName)
             self.ResultsDictionary.pop(CurrentName)
             self.ModelDetectorsDictionary.pop(CurrentName)
-            self.SelectionTable.setRowCount(0)
-            self.PlaceForPromFotos.clear()
-            self.SelectionListIndexProm = ""
 
     def SavePhoto(self):
         is_checked = self.checkBoxSave.isChecked()
@@ -330,16 +372,24 @@ class Func(Ui_MainWindow):
                                + name + ".png", self.SegmentationImagesDictionary[name])
 
         else:
-            currentRow = self.SelectionList.currentRow()
+            index = 0
+            if self.SelectionListIndexProm == "":
+                currentRow = self.SelectionList.currentRow()
+                selected_item = self.SelectionList.currentItem()
+                selected_text = selected_item.text()
+
+            else:
+                currentRow = self.SelectionListSeg.currentRow()
+                selected_item = self.SelectionListSeg.currentItem()
+                selected_text = selected_item.text()
+                index = 1
             if currentRow != -1:
                 Folder_Path = QFileDialog.getExistingDirectory(None, "Select a folder:", "",
                                                                QFileDialog.Option.ShowDirsOnly)
                 if Folder_Path:
-                    selected_item = self.SelectionList.currentItem()
-                    selected_text = selected_item.text()
                     plt.imsave(Folder_Path + "\\" + selected_text + ".png", self.ImagesDictionary[selected_text])
 
-                    if selected_text in self.SegmentationImagesDictionary:
+                    if index == 1:
                         if not os.path.exists(Folder_Path + "\\PhotoSeg"):
                             os.makedirs(Folder_Path + "\\PhotoSeg")
                         plt.imsave(Folder_Path + "\\PhotoSeg" + "\\" + selected_text + ".png",
