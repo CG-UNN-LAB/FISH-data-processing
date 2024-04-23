@@ -9,7 +9,6 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem, QMessageBox
-from ultralytics import YOLO
 from Application_Qt_module_ui import Ui_MainWindow
 from ChromosomePatch import ChromosomeCellDetector
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -32,7 +31,6 @@ class Func(Ui_MainWindow):
         os.path.dirname(os.path.abspath(__file__)),
         "..\\Model\\my_yolov8_model_core_segmentation_plus_plus.pt",
     )
-    model = YOLO(FileModelPath)
 
     def setupUiFunc(self, MainWindow):
         self.setupUi(MainWindow)
@@ -108,10 +106,9 @@ class Func(Ui_MainWindow):
             except (UnboundLocalError, IndexError) as e:
                 error_dialog = QMessageBox()
                 error_dialog.setWindowTitle("Ошибка")
-                error_dialog.setText(f"Произошла ошибка: {str(e)}. Попробуйте перевыбрать элемент в таблице.")
+                error_dialog.setText(f"Произошла ошибка: {str(e)}. Попробуйте снова выбрать элемент в таблице.")
                 error_dialog.exec()
-
-                print("Ошибка таблицы.")
+                print("Ошибка таблицы: 'def SelectionTableFunc()'; ")
 
     def ClickPushButtonSeg(self):
         is_checked = self.checkBoxSeg.isChecked()
@@ -134,7 +131,6 @@ class Func(Ui_MainWindow):
     # Функция для сегментации:
     def predict_image_ChromosomePatch(self, Accuracy, ImageName):
         try:
-            detectorTest = ChromosomeCellDetector(self.ImagesDictionary[ImageName])
             detector = ChromosomeCellDetector(self.ImagesDictionary[ImageName])
             number_explode, number_whole = detector.find_cells(Accuracy)
             detector.detect_chromosomes()
@@ -152,7 +148,7 @@ class Func(Ui_MainWindow):
             self.width, self.height = fig.get_size_inches() * fig.get_dpi()
             buffer_rgba = canvas.buffer_rgba()
             array_rgba = np.asarray(buffer_rgba)
-            imgrgd = detectorTest.rgba2rgb(array_rgba)
+            imgrgd = self.rgba2rgb(array_rgba)
 
             ref = (
                 "Whole cell: "
@@ -225,8 +221,7 @@ class Func(Ui_MainWindow):
                 if np.all(image == 0):
                     break
                 image = cv2.resize(image, (512, 512))
-                detectorTest = ChromosomeCellDetector(image)
-                image = detectorTest.rgba2rgb(image)
+                image = self.rgba2rgb(image)
 
                 self.ImagesDictionary[ImageName] = image
                 self.SelectionList.addItem(ImageName)
@@ -291,7 +286,7 @@ class Func(Ui_MainWindow):
             return
 
         self.SelectionListIndex = ""
-        if self.SelectionListSeg.currentItem() is None:
+        if self.SelectionListSeg.currentItem() is None or self.SelectionListIndexProm == "":
             item = self.SelectionListSeg.item(self.SelectionListSeg.count()-1)
             self.SelectionListSeg.setCurrentItem(item)
         self.SelectionListIndexProm = (self.SelectionListSeg.currentItem()).text()
@@ -394,6 +389,20 @@ class Func(Ui_MainWindow):
                             os.makedirs(Folder_Path + "\\PhotoSeg")
                         plt.imsave(Folder_Path + "\\PhotoSeg" + "\\" + selected_text + ".png",
                                    self.SegmentationImagesDictionary[selected_text])
+
+    def rgba2rgb(self, rgba, background=(255, 255, 255)):
+        row, col, ch = rgba.shape
+        if ch == 3:
+            return rgba
+        assert ch == 4, 'RGBA image has 4 channels.'
+        rgb = np.zeros((row, col, 3), dtype='float32')
+        r, g, b, a = rgba[:, :, 0], rgba[:, :, 1], rgba[:, :, 2], rgba[:, :, 3]
+        a = np.asarray(a, dtype='float32') / 255.0
+        R, G, B = background
+        rgb[:, :, 0] = r * a + (1.0 - a) * R
+        rgb[:, :, 1] = g * a + (1.0 - a) * G
+        rgb[:, :, 2] = b * a + (1.0 - a) * B
+        return np.asarray(rgb, dtype='uint8')
 
 
 if __name__ == "__main__":
