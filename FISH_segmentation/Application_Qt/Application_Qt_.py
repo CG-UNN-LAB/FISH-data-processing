@@ -7,8 +7,8 @@ from PIL import Image
 from matplotlib import pyplot as plt
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem, QMessageBox
+from PyQt6.QtGui import QImage, QPixmap, QColor, QBrush
+from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem, QMessageBox, QApplication
 from Application_Qt_module_ui import Ui_MainWindow
 from ChromosomePatch import ChromosomeCellDetector
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -126,11 +126,16 @@ class Func(Ui_MainWindow):
                 self.predict_image_ChromosomePatch(Accuracy, self.SelectionListIndexProm)
             else:
                 self.predict_image_ChromosomePatch(Accuracy, self.SelectionListIndex)
+        self.DataLabel_2.setText("Обработка завершена")
         self.SelectionListSegFunc()
 
     # Функция для сегментации:
     def predict_image_ChromosomePatch(self, Accuracy, ImageName):
         try:
+            self.DataLabel_2.setText("Обрабатывается изображение: " + ImageName)
+            # Обрабатываем события в очереди, чтобы обновить QLabel
+            QApplication.processEvents()
+
             detector = ChromosomeCellDetector(self.ImagesDictionary[ImageName])
             number_explode, number_whole = detector.find_cells(Accuracy)
             detector.detect_chromosomes()
@@ -168,7 +173,6 @@ class Func(Ui_MainWindow):
             pixmap = pixmap.scaled(512, 512, Qt.AspectRatioMode.IgnoreAspectRatio)
 
             self.PlaceForPromFotos.setPixmap(pixmap)
-            self.DataLabel.setText(ref)
 
             FindImageInList = self.SelectionList.findItems(ImageName, QtCore.Qt.MatchFlag.MatchExactly)
             # Если элемент найден, удалите его
@@ -187,6 +191,9 @@ class Func(Ui_MainWindow):
             error_dialog.setWindowTitle("Ошибка")
             error_dialog.setText(f"Произошла ошибка: {str(e)}. Попробуйте увеличить точность.")
             error_dialog.exec()
+            FindImageInList = self.SelectionList.findItems(ImageName, QtCore.Qt.MatchFlag.MatchExactly)
+            if FindImageInList:
+                FindImageInList[0].setForeground(QBrush(QColor('red')))
 
             print("Ошибка. Попробуйте увеличить точность.")
 
@@ -242,10 +249,8 @@ class Func(Ui_MainWindow):
         except IndexError as e:
             error_dialog = QMessageBox()
             error_dialog.setWindowTitle("Ошибка")
-            error_dialog.setText(f"""
-                                 Произошла ошибка: {str(e)}. Проблема с обработкой .czi формата, возможно, ошибка с
-                                 количеством каналов.
-                                 """)
+            text = "Проблема с обработкой .czi формата, возможно, ошибка с количеством каналов"
+            error_dialog.setText(f"Произошла ошибка: {str(e)}. {text}.")
             error_dialog.exec()
             print("Ошибка. Проблема с обработкой .czi формата.")
             return np.zeros((3, 3))
@@ -339,6 +344,7 @@ class Func(Ui_MainWindow):
             Index = 1
 
             self.SelectionTable.setRowCount(0)
+            self.DataLabel.clear()
             self.PlaceForFotos.clear()
             self.PlaceForPromFotos.clear()
             self.SelectionListSegFunc()

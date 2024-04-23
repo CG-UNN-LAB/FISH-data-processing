@@ -7,6 +7,7 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+
 from ClickableLabel import ClickableLabel
 
 
@@ -61,9 +62,29 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.setContentsMargins(0, 1, 0, 0)
         self.verticalLayout_5.setSpacing(4)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.gridLayout_4 = QtWidgets.QGridLayout()
+        self.gridLayout_4.setSpacing(3)
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.SelectionList = QtWidgets.QListWidget(parent=self.Sec2_ToolsWidget)
+        self.SelectionList.setMinimumSize(QtCore.QSize(90, 0))
+        self.SelectionList.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.SelectionList.setMouseTracking(False)
+        self.SelectionList.setTabletTracking(False)
+        self.SelectionList.setAcceptDrops(False)
+        self.SelectionList.setAutoFillBackground(False)
+        self.SelectionList.setStyleSheet(
+            "#SelectionList\n"
+            "{\n"
+            "border: 2px solid #7C8081;\n"
+            "background: rgba(204, 224, 232, 0.7);\n"
+            "}"
+        )
+        self.SelectionList.setWordWrap(False)
+        self.SelectionList.setObjectName("SelectionList")
+        self.gridLayout_4.addWidget(self.SelectionList, 1, 1, 2, 1)
         self.SelectionTable = QtWidgets.QTableWidget(parent=self.Sec2_ToolsWidget)
         font = QtGui.QFont()
-        font.setFamily("Arial")
+        font.setFamily("Calibri")
         font.setPointSize(10)
         font.setBold(True)
         font.setItalic(False)
@@ -105,7 +126,42 @@ class Ui_MainWindow(object):
         self.SelectionTable.horizontalHeader().setStretchLastSection(True)
         self.SelectionTable.verticalHeader().setCascadingSectionResizes(False)
         self.SelectionTable.verticalHeader().setHighlightSections(True)
-        self.verticalLayout_5.addWidget(self.SelectionTable)
+        self.gridLayout_4.addWidget(self.SelectionTable, 0, 3, 3, 1)
+        self.label = QtWidgets.QLabel(parent=self.Sec2_ToolsWidget)
+        self.label.setMaximumSize(QtCore.QSize(16777215, 16))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(10)
+        self.label.setFont(font)
+        self.label.setStyleSheet(
+            "#label{\n" " color: white;\n" " background: #717270;\n" " }"
+        )
+        self.label.setObjectName("label")
+        self.gridLayout_4.addWidget(self.label, 0, 1, 1, 1)
+        self.label_2 = QtWidgets.QLabel(parent=self.Sec2_ToolsWidget)
+        self.label_2.setMaximumSize(QtCore.QSize(16777215, 16))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(10)
+        self.label_2.setFont(font)
+        self.label_2.setStyleSheet(
+            "#label_2{\n" " color: white;\n" " background: #717270;\n" " }"
+        )
+        self.label_2.setObjectName("label_2")
+        self.gridLayout_4.addWidget(self.label_2, 0, 2, 1, 1)
+        self.SelectionListSeg = QtWidgets.QListWidget(parent=self.Sec2_ToolsWidget)
+        self.SelectionListSeg.setMinimumSize(QtCore.QSize(90, 0))
+        self.SelectionListSeg.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.SelectionListSeg.setStyleSheet(
+            "#SelectionListSeg\n"
+            "{\n"
+            "border: 2px solid #7C8081;\n"
+            "background: rgba(204, 224, 232, 0.7);\n"
+            "}"
+        )
+        self.SelectionListSeg.setObjectName("SelectionListSeg")
+        self.gridLayout_4.addWidget(self.SelectionListSeg, 1, 2, 2, 1)
+        self.verticalLayout_5.addLayout(self.gridLayout_4)
         self.ToolsBox = QtWidgets.QGroupBox(parent=self.Sec2_ToolsWidget)
         self.ToolsBox.setMaximumSize(QtCore.QSize(16777215, 180))
         self.ToolsBox.setStyleSheet(
@@ -123,6 +179,10 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName("gridLayout")
         self.pushButtonStart = QtWidgets.QPushButton(parent=self.ToolsBox)
         self.pushButtonStart.setMinimumSize(QtCore.QSize(0, 27))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(10)
+        self.pushButtonStart.setFont(font)
         self.pushButtonStart.setStyleSheet(
             "QPushButton {\n"
             "  background-color:#4CAF50;\n"
@@ -140,6 +200,10 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.pushButtonStart, 0, 0, 1, 1)
         self.pushButtonSeg = QtWidgets.QPushButton(parent=self.ToolsBox)
         self.pushButtonSeg.setMinimumSize(QtCore.QSize(0, 27))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(10)
+        self.pushButtonSeg.setFont(font)
         self.pushButtonSeg.setStyleSheet(
             "QPushButton {\n"
             "  background-color:#4CAF50;\n"
@@ -156,10 +220,18 @@ class Ui_MainWindow(object):
         self.pushButtonSeg.setObjectName("pushButtonSeg")
         self.gridLayout.addWidget(self.pushButtonSeg, 1, 0, 1, 1)
         self.checkBoxSave = QtWidgets.QCheckBox(parent=self.ToolsBox)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(9)
+        self.checkBoxSave.setFont(font)
         self.checkBoxSave.setStyleSheet("background: rgba(204, 224, 232, 0.5)")
         self.checkBoxSave.setObjectName("checkBoxSave")
         self.gridLayout.addWidget(self.checkBoxSave, 4, 0, 1, 1)
         self.checkBoxSeg = QtWidgets.QCheckBox(parent=self.ToolsBox)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(9)
+        self.checkBoxSeg.setFont(font)
         self.checkBoxSeg.setStyleSheet(
             "\n" "background: rgba(204, 224, 232, 0.5)\n" "\n" "\n" ""
         )
@@ -167,6 +239,10 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.checkBoxSeg, 3, 0, 1, 1)
         self.pushButtonSave = QtWidgets.QPushButton(parent=self.ToolsBox)
         self.pushButtonSave.setMinimumSize(QtCore.QSize(0, 27))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(10)
+        self.pushButtonSave.setFont(font)
         self.pushButtonSave.setStyleSheet(
             "QPushButton {\n"
             "  background-color:#4CAF50;\n"
@@ -211,7 +287,7 @@ class Ui_MainWindow(object):
         self.DataLabel.setMinimumSize(QtCore.QSize(0, 0))
         self.DataLabel.setMaximumSize(QtCore.QSize(16777215, 90))
         font = QtGui.QFont()
-        font.setFamily("Arial")
+        font.setFamily("Calibri")
         font.setPointSize(9)
         font.setBold(False)
         font.setWeight(50)
@@ -228,6 +304,10 @@ class Ui_MainWindow(object):
         self.DataLabel.setObjectName("DataLabel")
         self.InfTools.addWidget(self.DataLabel)
         self.DataLabel_2 = QtWidgets.QLabel(parent=self.InfTools_)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(9)
+        self.DataLabel_2.setFont(font)
         self.DataLabel_2.setStyleSheet(
             "#DataLabel_2\n"
             "{\n"
@@ -239,49 +319,6 @@ class Ui_MainWindow(object):
         self.DataLabel_2.setObjectName("DataLabel_2")
         self.InfTools.addWidget(self.DataLabel_2)
         self.gridLayout_3.addWidget(self.InfTools_, 0, 2, 3, 1)
-        self.SelectionList = QtWidgets.QListWidget(parent=self.verticalGroupBox_2)
-        self.SelectionList.setMinimumSize(QtCore.QSize(90, 0))
-        self.SelectionList.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.SelectionList.setMouseTracking(False)
-        self.SelectionList.setTabletTracking(False)
-        self.SelectionList.setAcceptDrops(False)
-        self.SelectionList.setAutoFillBackground(False)
-        self.SelectionList.setStyleSheet(
-            "#SelectionList\n"
-            "{\n"
-            "border: 2px solid #7C8081;\n"
-            "background: rgba(204, 224, 232, 0.7);\n"
-            "}"
-        )
-        self.SelectionList.setWordWrap(False)
-        self.SelectionList.setObjectName("SelectionList")
-        self.gridLayout_3.addWidget(self.SelectionList, 1, 0, 2, 1)
-        self.label_2 = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
-        self.label_2.setMaximumSize(QtCore.QSize(16777215, 16))
-        self.label_2.setStyleSheet(
-            "#label_2{\n" " color: white;\n" " background: #717270;\n" " }"
-        )
-        self.label_2.setObjectName("label_2")
-        self.gridLayout_3.addWidget(self.label_2, 0, 1, 1, 1)
-        self.label = QtWidgets.QLabel(parent=self.verticalGroupBox_2)
-        self.label.setMaximumSize(QtCore.QSize(16777215, 16))
-        self.label.setStyleSheet(
-            "#label{\n" " color: white;\n" " background: #717270;\n" " }"
-        )
-        self.label.setObjectName("label")
-        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
-        self.SelectionListSeg = QtWidgets.QListWidget(parent=self.verticalGroupBox_2)
-        self.SelectionListSeg.setMinimumSize(QtCore.QSize(90, 0))
-        self.SelectionListSeg.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.SelectionListSeg.setStyleSheet(
-            "#SelectionListSeg\n"
-            "{\n"
-            "border: 2px solid #7C8081;\n"
-            "background: rgba(204, 224, 232, 0.7);\n"
-            "}"
-        )
-        self.SelectionListSeg.setObjectName("SelectionListSeg")
-        self.gridLayout_3.addWidget(self.SelectionListSeg, 1, 1, 2, 1)
         self.gridLayout.addWidget(self.verticalGroupBox_2, 0, 1, 10, 1)
         self.AccuracyWidget = QtWidgets.QWidget(parent=self.ToolsBox)
         self.AccuracyWidget.setMinimumSize(QtCore.QSize(0, 0))
@@ -299,6 +336,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.AccuracyText = QtWidgets.QLabel(parent=self.AccuracyWidget)
         self.AccuracyText.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(8)
+        self.AccuracyText.setFont(font)
         self.AccuracyText.setStyleSheet("#AccuracyText{ color: white; }")
         self.AccuracyText.setObjectName("AccuracyText")
         self.horizontalLayout_2.addWidget(self.AccuracyText)
@@ -324,6 +365,7 @@ class Ui_MainWindow(object):
         self.AccuracyLable.setMinimumSize(QtCore.QSize(0, 0))
         self.AccuracyLable.setMaximumSize(QtCore.QSize(100, 10))
         font = QtGui.QFont()
+        font.setFamily("Calibri")
         font.setPointSize(9)
         self.AccuracyLable.setFont(font)
         self.AccuracyLable.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -345,6 +387,10 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.setSpacing(0)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.tabWidget = QtWidgets.QTabWidget(parent=self.Sec1_ImageWidget)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(10)
+        self.tabWidget.setFont(font)
         self.tabWidget.setStyleSheet(
             "QTabWidget::pane{ \n"
             "    border: 4px outset rgba(204, 224, 232, 0.5);\n"
@@ -380,6 +426,10 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setSpacing(7)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.PlaceForFotos = QtWidgets.QLabel(parent=self.tab)
+        font = QtGui.QFont()
+        font.setBold(False)
+        font.setWeight(50)
+        self.PlaceForFotos.setFont(font)
         self.PlaceForFotos.setStyleSheet(
             "#PlaceForFotos\n" "{\n" "border: 4px inset #10f0ad;\n" "\n" "}"
         )
@@ -415,6 +465,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "FISH data processing"))
+        self.SelectionList.setSortingEnabled(False)
         item = self.SelectionTable.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Номер клетки"))
         item = self.SelectionTable.horizontalHeaderItem(1)
@@ -427,14 +478,13 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Красные х-мы"))
         item = self.SelectionTable.horizontalHeaderItem(5)
         item.setText(_translate("MainWindow", "Тип клетки"))
+        self.label.setText(_translate("MainWindow", "Изображения:"))
+        self.label_2.setText(_translate("MainWindow", "Результат:"))
         self.pushButtonStart.setText(_translate("MainWindow", "Выбрать фото"))
         self.pushButtonSeg.setText(_translate("MainWindow", "Cегментировать"))
         self.checkBoxSave.setText(_translate("MainWindow", "Сохранить все"))
         self.checkBoxSeg.setText(_translate("MainWindow", "Сегментировать все"))
         self.pushButtonSave.setText(_translate("MainWindow", "Сохранить"))
-        self.SelectionList.setSortingEnabled(False)
-        self.label_2.setText(_translate("MainWindow", "Результат:"))
-        self.label.setText(_translate("MainWindow", "Изображения:"))
         self.AccuracyText.setText(_translate("MainWindow", "Порог точности:  "))
         self.AccuracyLable.setText(_translate("MainWindow", "0.9"))
         self.PlaceForFotos.setText(
