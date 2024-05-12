@@ -7,7 +7,6 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-
 from ClickableLabel import ClickableLabel
 
 
@@ -152,6 +151,9 @@ class Ui_MainWindow(object):
         self.SelectionListSeg = QtWidgets.QListWidget(parent=self.Sec2_ToolsWidget)
         self.SelectionListSeg.setMinimumSize(QtCore.QSize(90, 0))
         self.SelectionListSeg.setMaximumSize(QtCore.QSize(100, 16777215))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.SelectionListSeg.setFont(font)
         self.SelectionListSeg.setStyleSheet(
             "#SelectionListSeg\n"
             "{\n"

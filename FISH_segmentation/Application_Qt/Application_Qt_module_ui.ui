@@ -291,6 +291,11 @@ QTableWidget::item {
                 <height>16777215</height>
                </size>
               </property>
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">#SelectionListSeg
 {
