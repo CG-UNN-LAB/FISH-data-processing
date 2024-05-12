@@ -112,8 +112,8 @@ class Func(Ui_MainWindow):
 
     def ClickPushButtonSeg(self):
         is_checked = self.checkBoxSeg.isChecked()
-        if ((self.SelectionListIndex == "" and self.SelectionListIndexProm == "") and not is_checked) or \
-                len(self.ImagesDictionary) == 0:
+        if (((self.SelectionListIndex == "" and self.SelectionListIndexProm == "") and not is_checked) or
+                len(self.ImagesDictionary)) == 0:
             return
         Accuracy = float(self.AccuracySlider.value() / 100)  # Берем точность с поля;
         if (Accuracy >= 0.98):
@@ -261,7 +261,7 @@ class Func(Ui_MainWindow):
         if FilePaths:
             self.PhotoReadAndSave(FilePaths)
 
-    # Обработка взаимодействия со списком выбранных изображений "SelectionList":    
+    # Обработка взаимодействия со списком выбранных изображений "SelectionList":
     def SelectionListFunc(self):
         if self.SelectionList.count() == 0:
             self.SelectionListIndex = ""
@@ -269,10 +269,9 @@ class Func(Ui_MainWindow):
 
         self.SelectionListIndexProm = ""
         if self.SelectionList.currentItem() is None:
-            item = self.SelectionList.item(self.SelectionList.count()-1)
+            item = self.SelectionList.item(self.SelectionList.count() - 1)
             self.SelectionList.setCurrentItem(item)
         self.SelectionListIndex = (self.SelectionList.currentItem()).text()
-       
         myImage = Image.fromarray(self.ImagesDictionary[self.SelectionListIndex])
         # Преобразование PIL Image в QImage
         MyQImage = QImage(myImage.tobytes(), myImage.size[0], myImage.size[1], QImage.Format.Format_RGB888)
@@ -292,7 +291,7 @@ class Func(Ui_MainWindow):
 
         self.SelectionListIndex = ""
         if self.SelectionListSeg.currentItem() is None or self.SelectionListIndexProm == "":
-            item = self.SelectionListSeg.item(self.SelectionListSeg.count()-1)
+            item = self.SelectionListSeg.item(self.SelectionListSeg.count() - 1)
             self.SelectionListSeg.setCurrentItem(item)
         self.SelectionListIndexProm = (self.SelectionListSeg.currentItem()).text()
 
@@ -325,7 +324,7 @@ class Func(Ui_MainWindow):
                 self.SelectionTable.setItem(index, 4, QTableWidgetItem(str(len(cell.red_chromosomes))))
                 self.SelectionTable.setItem(index, 5, QTableWidgetItem("Exploded" if cell.Type == 0 else "Whole"))
                 index += 1
-        
+
     def ListFuncDelete(self):
         if self.SelectionList.count() == 0 and self.SelectionListSeg.count() == 0:
             return
