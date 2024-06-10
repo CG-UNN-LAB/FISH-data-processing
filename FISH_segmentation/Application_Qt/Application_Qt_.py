@@ -112,8 +112,7 @@ class Func(Ui_MainWindow):
 
     def ClickPushButtonSeg(self):
         is_checked = self.checkBoxSeg.isChecked()
-        if (((self.SelectionListIndex == "" and self.SelectionListIndexProm == "") and not is_checked) or
-                len(self.ImagesDictionary)) == 0:
+        if (((self.SelectionListIndex == "" and self.SelectionListIndexProm == "") and not is_checked) or len(self.ImagesDictionary) == 0):
             return
         Accuracy = float(self.AccuracySlider.value() / 100)  # Берем точность с поля;
         if (Accuracy >= 0.98):
